@@ -2,6 +2,7 @@ package com.karan.lilcloud.composeUI
 
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,12 +35,15 @@ import com.karan.lilcloud.ui.theme.LilCloudTheme
 fun WeatherScreen() {
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+        ,
     ) {
         Image(
-            painter = painterResource(id = R.drawable.haze_bg),
+            painter = painterResource(id = R.drawable.sunny_bg),
             contentDescription = "Background Image",
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
         Column(
@@ -69,7 +74,6 @@ fun WeatherScreen() {
                         .padding(end = 16.dp)
                 )
             }
-
             WeatherDetail()
 
         }
