@@ -2,7 +2,6 @@ package com.karan.lilcloud.composeUI
 
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,15 +27,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.karan.lilcloud.model.Weather
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 
 
 @Composable
-fun WeatherScreen() {
+fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier) {
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .then(modifier)
         ,
     ) {
         Image(
@@ -58,7 +59,7 @@ fun WeatherScreen() {
 
             ) {
                 Text(
-                    text = "Dehradun",
+                    text = weather.name.toString(),
                     fontSize = 32.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
@@ -74,7 +75,7 @@ fun WeatherScreen() {
                         .padding(end = 16.dp)
                 )
             }
-            WeatherDetail()
+            WeatherDetail(weather, Modifier)
 
         }
     }
@@ -83,12 +84,13 @@ fun WeatherScreen() {
 }
 
 @Composable
-fun WeatherDetail(modifier: Modifier = Modifier) {
+fun WeatherDetail(weather : Weather, modifier: Modifier = Modifier) {
 
     Row(
         modifier = Modifier
             .padding(top = 32.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .then(modifier),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.Bottom
     ) {
@@ -108,7 +110,7 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = "9 Km \nWind",
+                text = weather.wind?.speed.toString() + " Km \nWind",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -118,8 +120,6 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
                         color = Color.Black, offset = Offset(1f, 1f), blurRadius = 1.5f
                     )
                 )
-
-
             )
         }
 
@@ -128,14 +128,14 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Mostly Cloudy",
+                text = weather.weather?.get(0)?.description.toString(),
                 fontSize = 16.sp,
                 color = Color.White,
 
                 )
 
             Text(
-                text = " " + "20" + "°",
+                text = " " + weather.main?.temp.toString() + "°",
                 fontSize = 80.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -144,7 +144,6 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
                         color = Color.Black, offset = Offset(1f, 1f), blurRadius = 2.5f
                     )
                 )
-
             )
 
             Row(
@@ -162,7 +161,7 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = "18" + "°",
+                    text = weather.main?.tempMin.toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -178,7 +177,7 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = "25" + "°",
+                    text = weather.main?.tempMax.toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -215,7 +214,7 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = "50% \nHumidity",
+                text = weather.main?.humidity.toString() + "% \nHumidity",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -235,6 +234,6 @@ fun WeatherDetail(modifier: Modifier = Modifier) {
 @Composable
 private fun SunnyPreview() {
     LilCloudTheme {
-        WeatherScreen()
+        WeatherScreen(Weather(null,null,null,null,null,null,null,null,null,null,null,null,null,null))
     }
 }

@@ -12,5 +12,5 @@ interface ApiService {
         @Query("lon") lon : Double,
         @Query("units") units : String,
         @Query("appid") apiKey : String,
-    ) : Call<Weather>
+    ) : Weather
 }
