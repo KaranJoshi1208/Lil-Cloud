@@ -28,20 +28,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.karan.lilcloud.model.Weather
+import com.karan.lilcloud.model.Weather.Clouds
+import com.karan.lilcloud.model.Weather.Coord
+import com.karan.lilcloud.model.Weather.Main
+import com.karan.lilcloud.model.Weather.Sys
+import com.karan.lilcloud.model.Weather.Wind
 import com.karan.lilcloud.ui.theme.LilCloudTheme
+import java.util.Calendar
+import kotlin.math.roundToInt
 
 
 @Composable
-fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier) {
+fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier, getBg : () -> Int) {
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .then(modifier)
-        ,
+            .then(modifier),
     ) {
         Image(
-            painter = painterResource(id = R.drawable.sunny_bg),
+            painter = painterResource(id = getBg()),
             contentDescription = "Background Image",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -84,7 +90,7 @@ fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun WeatherDetail(weather : Weather, modifier: Modifier = Modifier) {
+fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
 
     Row(
         modifier = Modifier
@@ -135,7 +141,7 @@ fun WeatherDetail(weather : Weather, modifier: Modifier = Modifier) {
                 )
 
             Text(
-                text = " " + weather.main?.temp.toString() + "°",
+                text = " " + weather.main?.temp!!.roundToInt() + "°",
                 fontSize = 80.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -156,12 +162,11 @@ fun WeatherDetail(weather : Weather, modifier: Modifier = Modifier) {
                     painter = painterResource(id = R.drawable.arrow_down),
                     contentDescription = "Minimum Temperature",
                     modifier = Modifier
-                        .size(14.dp)
-                    ,
+                        .size(14.dp),
                 )
 
                 Text(
-                    text = weather.main?.tempMin.toString() + "°",
+                    text = weather.main.tempMin?.roundToInt().toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -177,7 +182,7 @@ fun WeatherDetail(weather : Weather, modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = weather.main?.tempMax.toString() + "°",
+                    text = weather.main.tempMax?.roundToInt().toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -192,8 +197,7 @@ fun WeatherDetail(weather : Weather, modifier: Modifier = Modifier) {
                     painter = painterResource(id = R.drawable.arrow_up),
                     contentDescription = "Maximum Temperature",
                     modifier = Modifier
-                        .size(14.dp)
-                    ,
+                        .size(14.dp),
                 )
             }
 
@@ -230,10 +234,41 @@ fun WeatherDetail(weather : Weather, modifier: Modifier = Modifier) {
 }
 
 
+
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun SunnyPreview() {
+    val dummyWeather = Weather(
+        base = "stations",
+        clouds = Clouds(all = 0),
+        cod = 200,
+        coord = Coord(lat = 30.3165, lon = 78.0322),
+        dt = 1731842075,
+        id = 1273313,
+        main = Main(
+            feelsLike = 23.88,
+            grndLevel = 925,
+            humidity = 41,
+            pressure = 1013,
+            seaLevel = 1013,
+            temp = 24.32,
+            tempMax = 24.32,
+            tempMin = 24.32
+        ),
+        name = "Dehra Dūn",
+        rain = null,
+        sys = Sys(country = "IN", id = 9162, sunrise = 1731806124, sunset = 1731844236, type = 1),
+        timezone = 19800,
+        visibility = 10000,
+        weather = null,
+        wind = Wind(deg = 281, gust = 1.52, speed = 1.45)
+    )
     LilCloudTheme {
-        WeatherScreen(Weather(null,null,null,null,null,null,null,null,null,null,null,null,null,null))
+        WeatherScreen(
+            dummyWeather
+        ){
+            R.drawable.haze_bg
+        }
     }
 }

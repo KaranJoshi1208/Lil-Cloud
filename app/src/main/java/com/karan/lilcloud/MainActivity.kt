@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.karan.lilcloud.composeUI.WeatherScreen
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
+import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
 
@@ -34,8 +35,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             LilCloudTheme {
                 viewModel.weatherData.value?.also {
-                    WeatherScreen(it)
-
+                    val icon = it.weather?.get(0)?.icon.toString()
+                    WeatherScreen(it, getBg = { viewModel.whichBg(icon) } )
                 }
             }
         }
