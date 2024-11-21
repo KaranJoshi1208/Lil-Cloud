@@ -2,6 +2,7 @@ package com.karan.lilcloud.repository
 
 
 import com.karan.lilcloud.model.ApiService
+import com.karan.lilcloud.model.Forecast
 import com.karan.lilcloud.model.Weather
 import retrofit2.Response
 
@@ -13,6 +14,10 @@ class WeatherRepository (val api : ApiService){
 
     suspend fun getCurrentWeather(lat : Double, lon:Double, unit : String) : Weather {
         return api.getCurrentWeather(lat, lon, unit, API_KEY)
+    }
+
+    suspend fun getForecastWeather(lat : Double, lon:Double, unit : String) : Forecast {
+        return api.getForecastWeather(lat, lon, unit, API_KEY)
     }
 
 }

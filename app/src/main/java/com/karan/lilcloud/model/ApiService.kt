@@ -1,6 +1,5 @@
 package com.karan.lilcloud.model
 
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,4 +12,11 @@ interface ApiService {
         @Query("units") units : String,
         @Query("appid") apiKey : String,
     ) : Weather
+
+    suspend fun getForecastWeather(
+        @Query("lat") lat : Double,
+        @Query("lon") lon : Double,
+        @Query("units") units : String,
+        @Query("appid") apiKey : String,
+    ) : Forecast
 }
