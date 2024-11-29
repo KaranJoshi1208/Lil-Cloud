@@ -1,9 +1,13 @@
 package com.karan.lilcloud.viewModel
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.karan.lilcloud.R
 import com.karan.lilcloud.model.ApiService
 import com.karan.lilcloud.model.Forecast
@@ -79,4 +83,6 @@ class WeatherViewModel() : ViewModel() {
                     else -> 0
                 }
         }
-    }
+
+
+}

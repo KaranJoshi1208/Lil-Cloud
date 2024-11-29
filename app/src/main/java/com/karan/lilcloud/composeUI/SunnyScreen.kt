@@ -2,6 +2,7 @@ package com.karan.lilcloud.composeUI
 
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
@@ -39,19 +41,26 @@ import kotlin.math.roundToInt
 
 
 @Composable
-fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier, getBg : () -> Int) {
+fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier, /* getBg : () -> Int */) {
 
+//    val bg = painterResource(id = R.drawable.weather_background)
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Blue, Color.Cyan)
+                )
+            )
             .then(modifier),
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.weather_background /* getBg() */),
-            contentDescription = "Background Image",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+//        Image(
+//            painter = painterResource(id = R.drawable.weather_background /* getBg() */),
+//            contentDescription = "Background Image",
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            contentScale = ContentScale.Crop
+//        )
 
         Column(
             modifier = Modifier.fillMaxSize()
@@ -267,8 +276,6 @@ private fun SunnyPreview() {
     LilCloudTheme {
         WeatherScreen(
             dummyWeather
-        ){
-            R.drawable.weather_background
-        }
+        )
     }
 }
