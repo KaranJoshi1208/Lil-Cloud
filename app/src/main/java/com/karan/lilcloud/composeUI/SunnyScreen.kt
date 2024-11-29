@@ -47,7 +47,7 @@ fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier, getBg : () ->
             .then(modifier),
     ) {
         Image(
-            painter = painterResource(id = getBg()),
+            painter = painterResource(id = R.drawable.weather_background /* getBg() */),
             contentDescription = "Background Image",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -261,14 +261,14 @@ private fun SunnyPreview() {
         sys = Sys(country = "IN", id = 9162, sunrise = 1731806124, sunset = 1731844236, type = 1),
         timezone = 19800,
         visibility = 10000,
-        weather = null,
+        weather = null /* listOf( Weather(description= "clear sky", icon="01n", id=800, main="Clear")) */,
         wind = Wind(deg = 281, gust = 1.52, speed = 1.45)
     )
     LilCloudTheme {
         WeatherScreen(
             dummyWeather
         ){
-            R.drawable.haze_bg
+            R.drawable.weather_background
         }
     }
 }
