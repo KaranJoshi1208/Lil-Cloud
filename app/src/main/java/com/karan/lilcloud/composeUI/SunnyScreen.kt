@@ -41,7 +41,7 @@ import kotlin.math.roundToInt
 
 
 @Composable
-fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier, /* getBg : () -> Int */) {
+fun WeatherScreen(weather: Weather?, modifier: Modifier = Modifier, /* getBg : () -> Int */) {
 
 //    val bg = painterResource(id = R.drawable.weather_background)
     Box(
@@ -74,7 +74,7 @@ fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier, /* getBg : ()
 
             ) {
                 Text(
-                    text = weather.name.toString(),
+                    text = weather?.name.toString(),
                     fontSize = 32.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
@@ -99,7 +99,7 @@ fun WeatherScreen(weather: Weather, modifier: Modifier = Modifier, /* getBg : ()
 }
 
 @Composable
-fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
+fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
 
     Row(
         modifier = Modifier
@@ -125,7 +125,7 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = weather.wind?.speed.toString() + " Km \nWind",
+                text = weather?.wind?.speed.toString() + " Km \nWind",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -143,14 +143,14 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = weather.weather?.get(0)?.description.toString(),
+                text = weather?.weather?.get(0)?.description.toString(),
                 fontSize = 16.sp,
                 color = Color.White,
 
                 )
 
             Text(
-                text = " " + weather.main?.temp!!.roundToInt() + "°",
+                text = " " + weather?.main?.temp?.roundToInt() + "°",
                 fontSize = 80.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -175,7 +175,7 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = weather.main.tempMin?.roundToInt().toString() + "°",
+                    text = weather?.main?.tempMin?.roundToInt().toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -191,7 +191,7 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = weather.main.tempMax?.roundToInt().toString() + "°",
+                    text = weather?.main?.tempMax?.roundToInt().toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -227,7 +227,7 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = weather.main?.humidity.toString() + "% \nHumidity",
+                text = weather?.main?.humidity.toString() + "% \nHumidity",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,

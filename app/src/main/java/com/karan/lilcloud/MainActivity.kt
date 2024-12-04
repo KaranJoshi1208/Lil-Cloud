@@ -18,6 +18,9 @@ import com.karan.lilcloud.composeUI.WeatherScreen
 import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -57,28 +60,16 @@ class MainActivity : ComponentActivity() {
         val lat = 30.316496
         val lon = 78.032188
         val city = "London"
-//        enableEdgeToEdge(
-//            statusBarStyle = SystemBarStyle.light(Color.Transparent.toArgb(), Color.White.toArgb())
-//        )
+
         getGeoLocation()
+        viewModel.loadCurrentWeather(30.316496, 78.032188, "metric")
+
         setContent {
             LilCloudTheme {
-                viewModel.weatherData.value?.also {
-                    val icon = it.weather?.get(0)?.icon.toString()
-                    WeatherScreen(it /* getBg = { viewModel.whichBg(icon) } */)
-                }
+                WeatherScreen(viewModel.weatherData.value)
             }
         }
-
-//        while(true) {
-//            if (pM.isPermissionGranted(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-//                Toast.makeText(this@MainActivity, "Location Permission Granted", Toast.LENGTH_SHORT).show()
-//                break
-
-//            }else{
-
     }
-//        }
 
     private fun getGeoLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -93,7 +84,6 @@ class MainActivity : ComponentActivity() {
                 locationPermissionLauncher,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             )
-            return
         }
         locationClient.lastLocation
             .addOnSuccessListener { location ->
@@ -101,7 +91,9 @@ class MainActivity : ComponentActivity() {
                     val lon = location.longitude
                     val lat = location.latitude
                     Log.d("HowsTheWeather", "Latitude: $lat, Longitude: $lon")
-                    viewModel.loadCurrentWeather(lat, lon, "metric")
+//                    viewModel.loadCurrentWeather(30.316496, 78.032188, "metric")
+                }else{
+                    Log.d("HowsTheWeather", "Latitude: NULL, Longitude: NULL")
                 }
             }
             .addOnFailureListener {

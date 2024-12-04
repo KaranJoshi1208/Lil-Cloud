@@ -1,13 +1,9 @@
 package com.karan.lilcloud.viewModel
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.karan.lilcloud.R
 import com.karan.lilcloud.model.ApiService
 import com.karan.lilcloud.model.Forecast
@@ -33,31 +29,7 @@ class WeatherViewModel() : ViewModel() {
             } catch (e: Exception) {
                 Log.e("HowsTheWeather", "Error fetching weather", e)
             }
-
-
-//            (object : retrofit2.Callback<Weather> {
-//                override fun onResponse(
-//                    call: Call<Weather?>,
-//                    response: Response<Weather?>
-//                ) {
-//                    if(response.isSuccessful) {
-//                        response.body()?.also {
-//                            weatherData.value = it
-//                            Log.d("HowsTheWeather", it.toString())
-//                        }
-//                        Log.d("HowsTheWeather", "Its executing")
-//                    }
-//                }
-//
-//                override fun onFailure(
-//                    call: Call<Weather?>,
-//                    t: Throwable
-//                ) {
-//                    Log.d("HowsTheWeather" , "Not GOOD , Failed to get response !")
-//                }
-//            })
         }
-
     }
 
     fun loadForecastWeather(lat: Double, lon: Double, unit: String) {
