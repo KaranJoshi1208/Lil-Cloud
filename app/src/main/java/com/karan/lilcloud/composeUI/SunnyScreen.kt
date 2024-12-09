@@ -17,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -49,7 +51,7 @@ fun WeatherScreen(weather: Weather?, modifier: Modifier = Modifier, /* getBg : (
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color.Blue, Color.Cyan)
+                    colors = listOf(Color(0xFF692ADE), Color(0xFF3E089E), Color(0xFF57091C))
                 )
             )
             .then(modifier),
@@ -62,35 +64,53 @@ fun WeatherScreen(weather: Weather?, modifier: Modifier = Modifier, /* getBg : (
 //            contentScale = ContentScale.Crop
 //        )
 
+        /**
+         * Blur the background
+         */
+
+//        Box(
+//            modifier = Modifier
+//                .matchParentSize()
+//                .background(Color(0x33FFFFFF)) // Semi-transparent white
+//                .blur(12.dp) // Blur only the background
+//        )
+
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
 
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 64.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = weather?.name.toString(),
-                    fontSize = 32.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 16.dp),
-//                    style = TextStyle(shadow = Shadow(color = Color.Black, offset = Offset(1f,1f) , blurRadius = 2.5f))
-                )
 
+                Spacer(modifier = Modifier.padding(start = 16.dp))
                 Image(
                     painter = painterResource(id = R.drawable.plus),
                     contentDescription = "Add City",
                     modifier = Modifier
-                        .size(40.dp)
-                        .padding(end = 16.dp)
+                        .size(24.dp)
+                )
+
+                Text(
+                    text = weather?.name?.toString() ?: "Select City",
+                    fontSize = 32.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+//                        .padding(start = 75.dp)
+                    ,
+                    style = TextStyle(shadow = Shadow(color = Color.Black, offset = Offset(1f,1f) , blurRadius = 2.5f))
                 )
             }
-            WeatherDetail(weather, Modifier)
+            weather?.let {
+                WeatherDetail(weather, Modifier)
+            }
 
         }
     }
@@ -99,7 +119,7 @@ fun WeatherScreen(weather: Weather?, modifier: Modifier = Modifier, /* getBg : (
 }
 
 @Composable
-fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
+fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
 
     Row(
         modifier = Modifier
@@ -125,7 +145,7 @@ fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = weather?.wind?.speed.toString() + " Km \nWind",
+                text = weather.wind?.speed.toString() + " Km/h\nWind",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -140,25 +160,30 @@ fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
 
         Column(
             modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = weather?.weather?.get(0)?.description.toString(),
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
+                ,
+                text = (weather.weather?.get(0)?.description ?: "").toString(),
                 fontSize = 16.sp,
                 color = Color.White,
-
                 )
 
             Text(
-                text = " " + weather?.main?.temp?.roundToInt() + "°",
-                fontSize = 80.sp,
-                fontWeight = FontWeight.Bold,
+                text = " " + weather.main?.temp?.roundToInt() + "°",
+                fontSize = 100.sp,
+                fontWeight = FontWeight.Thin,
                 color = Color.White,
                 style = TextStyle(
                     shadow = Shadow(
                         color = Color.Black, offset = Offset(1f, 1f), blurRadius = 2.5f
                     )
-                )
+                ),
+//                modifier = Modifier
+//                    .background(Color(0x22FFFFFF))
+//                    .blur(4.dp)
             )
 
             Row(
@@ -175,7 +200,7 @@ fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = weather?.main?.tempMin?.roundToInt().toString() + "°",
+                    text = weather.main?.tempMin?.roundToInt().toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -191,7 +216,7 @@ fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = weather?.main?.tempMax?.roundToInt().toString() + "°",
+                    text = weather.main?.tempMax?.roundToInt().toString() + "°",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -227,7 +252,7 @@ fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = weather?.main?.humidity.toString() + "% \nHumidity",
+                text = weather.main?.humidity.toString() + "% \nHumidity",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -248,7 +273,26 @@ fun WeatherDetail(weather: Weather?, modifier: Modifier = Modifier) {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun SunnyPreview() {
-    val dummyWeather = Weather(
+
+    val dummyWeather1 = Weather(
+        base = null,
+        clouds = null,
+        cod = null,
+        coord = null,
+        dt = null,
+        id = null,
+        main = null,
+        name = null,
+        rain = null,
+        sys = null,
+        timezone = null,
+        visibility = null,
+        weather = null,
+        wind = null
+    )
+
+    val dummyWeather2 : Weather? = null
+    val dummyWeather3 = Weather(
         base = "stations",
         clouds = Clouds(all = 0),
         cod = 200,
@@ -275,7 +319,7 @@ private fun SunnyPreview() {
     )
     LilCloudTheme {
         WeatherScreen(
-            dummyWeather
+            dummyWeather3
         )
     }
 }

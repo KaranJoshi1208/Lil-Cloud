@@ -18,9 +18,6 @@ import com.karan.lilcloud.composeUI.WeatherScreen
 import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -62,7 +59,7 @@ class MainActivity : ComponentActivity() {
         val city = "London"
 
         getGeoLocation()
-        viewModel.loadCurrentWeather(30.316496, 78.032188, "metric")
+//        viewModel.loadCurrentWeather(30.316496, 78.032188, "metric")
 
         setContent {
             LilCloudTheme {
@@ -88,10 +85,10 @@ class MainActivity : ComponentActivity() {
         locationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
-                    val lon = location.longitude
                     val lat = location.latitude
+                    val lon = location.longitude
                     Log.d("HowsTheWeather", "Latitude: $lat, Longitude: $lon")
-//                    viewModel.loadCurrentWeather(30.316496, 78.032188, "metric")
+                    viewModel.loadCurrentWeather(lat, lon, "metric")
                 }else{
                     Log.d("HowsTheWeather", "Latitude: NULL, Longitude: NULL")
                 }
