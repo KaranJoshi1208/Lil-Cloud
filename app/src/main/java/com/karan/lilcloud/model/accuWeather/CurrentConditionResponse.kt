@@ -2,9 +2,10 @@ package com.karan.lilcloud.model.accuWeather
 
 
 import com.google.gson.annotations.SerializedName
+import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse.CurrentConditionResponseItem
 
-class CurrentConditiion : ArrayList<CurrentConditiionItem>(){
-    data class CurrentConditiionItem(
+class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
+    data class CurrentConditionResponseItem(
         @SerializedName("ApparentTemperature")
         val apparentTemperature: ApparentTemperature?,
         @SerializedName("Ceiling")

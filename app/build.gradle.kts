@@ -18,6 +18,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_KEY_OWM", "\"${project.findProperty("API_KEY_OWM") ?: ""}\"")
+        buildConfigField("String", "API_KEY_ACCU", "\"${project.findProperty("API_KEY_ACCU") ?: ""}\"")
+
+    }
+
+    buildFeatures {
+        buildConfig = true
+        compose = true
     }
 
     buildTypes {
@@ -35,9 +44,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
     }
 }
 
