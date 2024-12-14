@@ -3,7 +3,7 @@ package com.karan.lilcloud.composeUI
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -30,14 +31,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse.CurrentConditionResponseItem
+import androidx.core.view.ContentInfoCompat
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
 import kotlin.math.roundToInt
 
 
 @Composable
-fun WeatherScreen(viewModel: WeatherViewModel , modifier: Modifier = Modifier /* getBg : () -> Int */) {
+fun WeatherScreen(
+    viewModel: WeatherViewModel,
+    modifier: Modifier = Modifier /* getBg : () -> Int */
+) {
+
+    if(viewModel.showDialog.value) {
+        EnableLocationDialog(
+            { viewModel.showLocationSettings() },
+            {}
+        )
+    }
 
     // add a loading screen
     // TODO("loadingScreen")
@@ -85,8 +96,7 @@ fun WeatherScreen(viewModel: WeatherViewModel , modifier: Modifier = Modifier /*
                     contentDescription = "Menu",
                     modifier = Modifier
                         .padding(start = 20.dp)
-                        .size(32.dp)
-                    ,
+                        .size(32.dp),
                 )
             }
 
@@ -123,8 +133,7 @@ fun WeatherDetail(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                 color = Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp)
-                ,
+                    .padding(bottom = 12.dp),
                 style = TextStyle(
                     shadow = Shadow(
                         color = Color.Black,
@@ -158,8 +167,7 @@ fun WeatherDetail(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
             text = weather?.weatherText.toString(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
-            ,
+                .padding(top = 8.dp),
             textAlign = TextAlign.Center,
             fontSize = 20.sp,
             fontWeight = FontWeight.Thin,
@@ -168,12 +176,47 @@ fun WeatherDetail(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun EnableLocationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = {
+            Text(text = "Location Services")
+        },
+        text = {
+            Text(text = "Location services are required to show weather, please enable them.")
+        },
+        confirmButton = {
+            Text(
+                text = "Go to Settings",
+                color = Color.Blue,
+                modifier = Modifier
+                    .clickable(enabled = true, onClick = { onConfirm() })
+            )
+        },
+        dismissButton = {
+            Text(
+                text = "Cancel",
+                color = Color.Blue,
+                modifier = Modifier
+                    .clickable(enabled = true, onClick = { onDismiss() })
+                    .padding(end = 36.dp)
+            )
+        },
+    )
+}
 
-@Preview(showSystemUi = true, showBackground = true)
+
+@Preview(showSystemUi = false, showBackground = true)
 @Composable
 private fun SunnyPreview() {
-
     LilCloudTheme {
-        WeatherScreen(WeatherViewModel())
+        EnableLocationDialog(
+            {},
+            {}
+        )
     }
 }
