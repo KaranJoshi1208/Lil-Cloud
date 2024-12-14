@@ -1,23 +1,39 @@
 package com.karan.lilcloud.viewModel
 
+import android.app.Application
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.ContentInfoCompat
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.karan.lilcloud.MainActivity
 import com.karan.lilcloud.R
+import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.repository.WeatherRepository
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class WeatherViewModel() : ViewModel() {
+class WeatherViewModel( application: Application) : AndroidViewModel(application) {
 
     private val repo: WeatherRepository = WeatherRepository()
+    private val applicationContext = application.applicationContext
 
+    val pM: PermissionManager = PermissionManager(applicationContext)
+    val locationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
+
+    var showDialog = mutableStateOf<Boolean>(false)
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
-    var currentCondition =
-        mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
+    var currentCondition = mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
         viewModelScope.launch {
@@ -54,6 +70,22 @@ class WeatherViewModel() : ViewModel() {
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching CurrentCondition", e)
         }
+    }
+
+
+    fun isLocationEnabled(): Boolean {
+        val locationManager =
+            applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
+    fun showLocationSettings() {
+        showDialog.value = false
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        applicationContext.startActivity(intent)
     }
 
     fun whichBg(icon: String): Int {
