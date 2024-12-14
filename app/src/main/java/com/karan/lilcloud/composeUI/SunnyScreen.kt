@@ -30,18 +30,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.karan.lilcloud.model.Weather
-import com.karan.lilcloud.model.Weather.Clouds
-import com.karan.lilcloud.model.Weather.Coord
-import com.karan.lilcloud.model.Weather.Main
-import com.karan.lilcloud.model.Weather.Sys
-import com.karan.lilcloud.model.Weather.Wind
+import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse.CurrentConditionResponseItem
 import com.karan.lilcloud.ui.theme.LilCloudTheme
+import com.karan.lilcloud.viewModel.WeatherViewModel
 import kotlin.math.roundToInt
 
 
 @Composable
-fun WeatherScreen(weather: Weather?, modifier: Modifier = Modifier /* getBg : () -> Int */) {
+fun WeatherScreen(viewModel: WeatherViewModel , modifier: Modifier = Modifier /* getBg : () -> Int */) {
+
+    // add a loading screen
+    // TODO("loadingScreen")
+
+    val weather = viewModel.currentCondition.value
+    val location = viewModel.geoLocation.value
 
     val scrollState = rememberScrollState()
     Box(
@@ -71,6 +73,7 @@ fun WeatherScreen(weather: Weather?, modifier: Modifier = Modifier /* getBg : ()
                 .verticalScroll(enabled = true, state = scrollState)
 
         ) {
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -83,17 +86,23 @@ fun WeatherScreen(weather: Weather?, modifier: Modifier = Modifier /* getBg : ()
                     modifier = Modifier
                         .padding(start = 20.dp)
                         .size(32.dp)
+                    ,
                 )
             }
+
             weather?.let {
-                WeatherDetail(weather, Modifier)
+                WeatherDetail(viewModel, Modifier)
             }
         }
     }
 }
 
 @Composable
-fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
+fun WeatherDetail(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
+
+    val weather = viewModel.currentCondition.value
+    val location = viewModel.geoLocation.value
+
 
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -103,17 +112,19 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 48.dp),
+                .padding(top = 36.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
 
             Text(
-                text = weather.name?.toString() ?: "Select City",
+                text = location?.localizedName?.toString() ?: "where ?",
                 fontSize = 28.sp,
                 textAlign = TextAlign.Center,
                 color = Color.White,
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+                ,
                 style = TextStyle(
                     shadow = Shadow(
                         color = Color.Black,
@@ -125,7 +136,7 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
         }
 
         Text(
-            text = " " + weather.main?.temp?.roundToInt() + "°",
+            text = " " + weather?.temperature?.metric?.value?.roundToInt() + "°",
             fontSize = 100.sp,
             fontWeight = FontWeight.Thin,
             color = Color.White,
@@ -135,16 +146,16 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
                 )
             )
         )
-
+        val temp = weather?.temperatureSummary?.past6HourRange
         Text(
-            text = "30° / 16°",
+            text = "${temp?.maximum.toString()}° / ${temp?.minimum.toString()}°",
             fontSize = 16.sp,
             fontWeight = FontWeight.Thin,
             color = Color.White,
         )
 
         Text(
-            text = "Clear Sky",
+            text = weather?.weatherText.toString(),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
@@ -162,52 +173,7 @@ fun WeatherDetail(weather: Weather, modifier: Modifier = Modifier) {
 @Composable
 private fun SunnyPreview() {
 
-    val dummyWeather1 = Weather(
-        base = null,
-        clouds = null,
-        cod = null,
-        coord = null,
-        dt = null,
-        id = null,
-        main = null,
-        name = null,
-        rain = null,
-        sys = null,
-        timezone = null,
-        visibility = null,
-        weather = null,
-        wind = null
-    )
-
-    val dummyWeather2: Weather? = null
-    val dummyWeather3 = Weather(
-        base = "stations",
-        clouds = Clouds(all = 0),
-        cod = 200,
-        coord = Coord(lat = 30.3165, lon = 78.0322),
-        dt = 1731842075,
-        id = 1273313,
-        main = Main(
-            feelsLike = 23.88,
-            grndLevel = 925,
-            humidity = 41,
-            pressure = 1013,
-            seaLevel = 1013,
-            temp = 24.32,
-            tempMax = 24.32,
-            tempMin = 24.32
-        ),
-        name = "Dehra Dūn",
-        rain = null,
-        sys = Sys(country = "IN", id = 9162, sunrise = 1731806124, sunset = 1731844236, type = 1),
-        timezone = 19800,
-        visibility = 10000,
-        weather = null /* listOf( Weather(description= "clear sky", icon="01n", id=800, main="Clear")) */,
-        wind = Wind(deg = 281, gust = 1.52, speed = 1.45)
-    )
     LilCloudTheme {
-        WeatherScreen(
-            dummyWeather3
-        )
+        WeatherScreen(WeatherViewModel())
     }
 }

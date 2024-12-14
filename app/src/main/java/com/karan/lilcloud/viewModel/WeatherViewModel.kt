@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.karan.lilcloud.R
-import com.karan.lilcloud.model.Forecast
-import com.karan.lilcloud.model.Weather
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.repository.WeatherRepository
@@ -16,55 +14,45 @@ import java.util.Calendar
 class WeatherViewModel() : ViewModel() {
 
     private val repo: WeatherRepository = WeatherRepository()
-    var weatherData = mutableStateOf<Weather?>(null)
-    var forecastData = mutableStateOf<Forecast?>(null)
 
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
-    var currentCondition = mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
+    var currentCondition =
+        mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
 
-    fun loadCurrentWeather(lat: Double, lon: Double, unit: String) {
-        viewModelScope.launch() {
+    fun loadCurrentWeather(lat: Double, lon: Double) {
+        viewModelScope.launch {
             try {
-                val response = repo.getCurrentWeather(lat, lon, unit)
-                weatherData.value = response
-                Log.d("HowsTheWeather", "Weather: $response")
+                getLocationInfo("$lat,$lon")
             } catch (e: Exception) {
-                Log.e("HowsTheWeather", "Error fetching weather", e)
+                Log.e("HowsTheWeather", "Error fetching geoLocation", e)
             }
+            geoLocation.value?.let {
+                try {
+                    getCurrentCondition(geoLocation.value!!.key.toString())
+                } catch (e: Exception) {
+                    Log.e("HowsTheWeather", "Error fetching CurrentCondition", e)
+                }
+            } ?: Log.d("HowsTheWeather", "Location Response is NULL")
         }
     }
 
-    fun loadForecastWeather(lat: Double, lon: Double, unit: String) {
-        viewModelScope.launch() {
-            try {
-                val response = repo.getForecastWeather(lat, lon, unit)
-                forecastData.value = response
-                Log.d("HowsTheWeather", "Forecast: $response")
-            } catch (e: Exception) {
-                Log.e("HowsTheWeather", "Error fetching forecast", e)
-            }
+    suspend fun getLocationInfo(geoPosition: String) {
+        try {
+            val response = repo.getLocationInfo(geoPosition)
+            geoLocation.value = response
+            Log.d("HowsTheWeather", geoLocation.value.toString())
+        } catch (e: Exception) {
+            Log.e("HowsTheWeather", "Error fetching GeoLocation", e)
         }
     }
 
-    fun getLocationInfo(geoPosition : String) {
-        viewModelScope.launch() {
-            try {
-                val response = repo.getLocationInfo(geoPosition)
-                geoLocation.value = response
-            } catch (e : Exception) {
-                Log.e("HowsTheWeather", "Error fetching GeoLocation", e)
-            }
-        }
-    }
-
-    fun getCurrentCondition(locationKey : String) {
-        viewModelScope.launch() {
-            try {
-                val response = repo.getCurrentCondition(locationKey)
-                currentCondition.value = response[0]
-            } catch (e : Exception) {
-                Log.e("HowsTheWeather", "Error fetching GeoLocation", e)
-            }
+    suspend fun getCurrentCondition(locationKey: String) {
+        try {
+            val response = repo.getCurrentCondition(locationKey)
+            currentCondition.value = response[0]
+            Log.d("HowsTheWeather", currentCondition.value.toString())
+        } catch (e: Exception) {
+            Log.e("HowsTheWeather", "Error fetching CurrentCondition", e)
         }
     }
 

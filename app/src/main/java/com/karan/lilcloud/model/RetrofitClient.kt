@@ -12,14 +12,8 @@ object RetrofitClient {
         .writeTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    val retrofit_OWM : Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.openweathermap.org")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
     val retrofit_ACCU : Retrofit = Retrofit.Builder()
-        .baseUrl("http://dataservice.accuweather.com")
+        .baseUrl("https://dataservice.accuweather.com")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

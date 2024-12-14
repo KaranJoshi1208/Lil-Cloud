@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LilCloudTheme {
-                WeatherScreen(viewModel.weatherData.value)
+                WeatherScreen(viewModel)
             }
         }
     }
@@ -82,13 +82,17 @@ class MainActivity : ComponentActivity() {
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
+
+        // check if location services are enabled on user's device
+        // TODO("isLocationServiceEnabled")
+
         locationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
                     val lat = location.latitude
                     val lon = location.longitude
                     Log.d("HowsTheWeather", "Latitude: $lat, Longitude: $lon")
-                    viewModel.loadCurrentWeather(lat, lon, "metric")
+                    viewModel.loadCurrentWeather(lat, lon)
                 }else{
                     Log.d("HowsTheWeather", "Latitude: NULL, Longitude: NULL")
                 }

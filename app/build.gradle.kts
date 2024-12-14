@@ -1,9 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("kotlin-parcelize")
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if(file.exists()) load(file.inputStream())
 }
 
 android {
@@ -19,8 +26,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "API_KEY_OWM", "\"${project.findProperty("API_KEY_OWM") ?: ""}\"")
-        buildConfigField("String", "API_KEY_ACCU", "\"${project.findProperty("API_KEY_ACCU") ?: ""}\"")
+        buildConfigField("String", "API_KEY_ACCU", "\"${localProperties.getProperty("API_KEY_ACCU") ?: ""}\"")
 
     }
 
