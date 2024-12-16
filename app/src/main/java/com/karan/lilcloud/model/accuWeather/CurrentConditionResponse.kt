@@ -87,7 +87,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -97,7 +97,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class Ceiling(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -112,7 +112,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -122,7 +122,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class DewPoint(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -137,7 +137,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -147,7 +147,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class Past24HourTemperatureDeparture(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -162,7 +162,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -172,7 +172,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class Precip1hr(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -187,7 +187,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -197,7 +197,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class PrecipitationSummary(
             @SerializedName("Past12Hours")
             val past12Hours: Past12Hours?,
@@ -230,7 +230,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -240,7 +240,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-    
+
             data class Past18Hours(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -255,7 +255,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -265,7 +265,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-    
+
             data class Past24Hours(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -280,7 +280,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -290,7 +290,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-    
+
             data class Past3Hours(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -305,7 +305,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -315,7 +315,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-    
+
             data class Past6Hours(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -330,7 +330,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -340,7 +340,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-    
+
             data class Past9Hours(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -355,7 +355,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -365,7 +365,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-    
+
             data class PastHour(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -380,7 +380,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -390,7 +390,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-    
+
             data class Precipitation(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -405,7 +405,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -416,7 +416,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 )
             }
         }
-    
+
         data class Pressure(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -431,7 +431,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -441,14 +441,14 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class PressureTendency(
             @SerializedName("Code")
             val code: String?,
             @SerializedName("LocalizedText")
             val localizedText: String?
         )
-    
+
         data class RealFeelTemperature(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -465,7 +465,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Phrase")
                 val phrase: String?,
@@ -477,7 +477,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class RealFeelTemperatureShade(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -494,7 +494,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Phrase")
                 val phrase: String?,
@@ -506,7 +506,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class Temperature(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -521,7 +521,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -531,7 +531,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class TemperatureSummary(
             @SerializedName("Past12HourRange")
             val past12HourRange: Past12HourRange?,
@@ -560,7 +560,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         @SerializedName("Value")
                         val value: Double?
                     )
-    
+
                     data class Metric(
                         @SerializedName("Unit")
                         val unit: String?,
@@ -570,7 +570,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         val value: Double?
                     )
                 }
-    
+
                 data class Minimum(
                     @SerializedName("Imperial")
                     val imperial: Imperial?,
@@ -585,7 +585,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         @SerializedName("Value")
                         val value: Double?
                     )
-    
+
                     data class Metric(
                         @SerializedName("Unit")
                         val unit: String?,
@@ -596,7 +596,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     )
                 }
             }
-    
+
             data class Past24HourRange(
                 @SerializedName("Maximum")
                 val maximum: Maximum?,
@@ -617,7 +617,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         @SerializedName("Value")
                         val value: Double?
                     )
-    
+
                     data class Metric(
                         @SerializedName("Unit")
                         val unit: String?,
@@ -627,7 +627,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         val value: Double?
                     )
                 }
-    
+
                 data class Minimum(
                     @SerializedName("Imperial")
                     val imperial: Imperial?,
@@ -642,7 +642,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         @SerializedName("Value")
                         val value: Double?
                     )
-    
+
                     data class Metric(
                         @SerializedName("Unit")
                         val unit: String?,
@@ -653,7 +653,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     )
                 }
             }
-    
+
             data class Past6HourRange(
                 @SerializedName("Maximum")
                 val maximum: Maximum?,
@@ -674,7 +674,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         @SerializedName("Value")
                         val value: Double?
                     )
-    
+
                     data class Metric(
                         @SerializedName("Unit")
                         val unit: String?,
@@ -684,7 +684,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         val value: Double?
                     )
                 }
-    
+
                 data class Minimum(
                     @SerializedName("Imperial")
                     val imperial: Imperial?,
@@ -699,7 +699,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                         @SerializedName("Value")
                         val value: Double?
                     )
-    
+
                     data class Metric(
                         @SerializedName("Unit")
                         val unit: String?,
@@ -711,7 +711,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 }
             }
         }
-    
+
         data class Visibility(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -726,7 +726,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -736,7 +736,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class WetBulbGlobeTemperature(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -751,7 +751,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -761,7 +761,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class WetBulbTemperature(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -776,7 +776,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -786,7 +786,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class Wind(
             @SerializedName("Direction")
             val direction: Direction?,
@@ -801,7 +801,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Localized")
                 val localized: String?
             )
-    
+
             data class Speed(
                 @SerializedName("Imperial")
                 val imperial: Imperial?,
@@ -816,7 +816,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
@@ -827,7 +827,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 )
             }
         }
-    
+
         data class WindChillTemperature(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -842,7 +842,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-    
+
             data class Metric(
                 @SerializedName("Unit")
                 val unit: String?,
@@ -852,7 +852,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 val value: Double?
             )
         }
-    
+
         data class WindGust(
             @SerializedName("Speed")
             val speed: Speed?
@@ -871,7 +871,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     @SerializedName("Value")
                     val value: Double?
                 )
-    
+
                 data class Metric(
                     @SerializedName("Unit")
                     val unit: String?,
