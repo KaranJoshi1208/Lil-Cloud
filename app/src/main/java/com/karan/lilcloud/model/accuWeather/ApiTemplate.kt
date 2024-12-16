@@ -27,6 +27,7 @@ interface ApiTemplate {
     @GET("/currentconditions/v1/{locationKey}")
     suspend fun getCurrentCondition(
         @Path("locationKey") locationKey : String,
-        @Query("apikey") apiKey : String
+        @Query("apikey") apiKey : String,
+        @Query("details") details : String = "true"
     ) : CurrentConditionResponse
 }

@@ -1,5 +1,6 @@
 package com.karan.lilcloud.composeUI
 
+import android.util.Log
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -156,8 +157,9 @@ fun WeatherDetail(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
             )
         )
         val temp = weather?.temperatureSummary?.past6HourRange
+
         Text(
-            text = "${temp?.maximum.toString()}° / ${temp?.minimum.toString()}°",
+            text = "${temp?.maximum?.metric?.value.toString()}° / ${temp?.minimum?.metric?.value.toString()}°",
             fontSize = 16.sp,
             fontWeight = FontWeight.Thin,
             color = Color.White,
@@ -214,9 +216,6 @@ fun EnableLocationDialog(
 @Composable
 private fun SunnyPreview() {
     LilCloudTheme {
-        EnableLocationDialog(
-            {},
-            {}
-        )
+//        WeatherScreen(WeatherViewModel())
     }
 }
