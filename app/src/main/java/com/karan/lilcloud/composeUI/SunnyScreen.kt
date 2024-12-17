@@ -1,10 +1,10 @@
 package com.karan.lilcloud.composeUI
 
-import android.util.Log
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,12 +19,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.ContentInfoCompat
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
 import kotlin.math.roundToInt
@@ -44,19 +43,21 @@ fun WeatherScreen(
     modifier: Modifier = Modifier /* getBg : () -> Int */
 ) {
 
-    if(viewModel.showDialog.value) {
+    if (viewModel.showDialog.value) {
         EnableLocationDialog(
             { viewModel.showLocationSettings() },
-            {}
+            { viewModel.showDialog.value = false }
         )
     }
 
-    // add a loading screen
-    // TODO("loadingScreen")
+//    if (viewModel.showLoading.value) {
+//        Log.d("HowsTheWeather", "Loading Screen ....START...")
+//        Loading()
+//        Log.d("HowsTheWeather", "Loading Screen ....END...")
+//
+//    }
 
     val weather = viewModel.currentCondition.value
-    val location = viewModel.geoLocation.value
-
     val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
@@ -68,16 +69,6 @@ fun WeatherScreen(
             )
             .then(modifier),
     ) {
-        /**
-         * Blur the background
-         */
-
-//        Box(
-//            modifier = Modifier
-//                .matchParentSize()
-//                .background(Color.Transparent) // Semi-transparent white
-//                .blur(radius = 16.dp) // Blur only the background
-//        )
 
         Column(
             modifier = Modifier
@@ -103,7 +94,7 @@ fun WeatherScreen(
 
             weather?.let {
                 WeatherDetail(viewModel, Modifier)
-            }
+            } ?: if(viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/}
         }
     }
 }
@@ -113,7 +104,6 @@ fun WeatherDetail(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
 
     val weather = viewModel.currentCondition.value
     val location = viewModel.geoLocation.value
-
 
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -211,11 +201,41 @@ fun EnableLocationDialog(
     )
 }
 
+@Composable
+fun Loading() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x40000000))
+                .blur(radius = 20.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 104.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            androidx.compose.material3.CircularProgressIndicator(
+                color = Color.White,
+                strokeWidth = 4.dp,
+                modifier = Modifier
+                    .size(100.dp)
+            )
+        }
+    }
+}
 
-@Preview(showSystemUi = false, showBackground = true)
+
+
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun SunnyPreview() {
     LilCloudTheme {
+        Loading()
 //        WeatherScreen(WeatherViewModel())
     }
 }
