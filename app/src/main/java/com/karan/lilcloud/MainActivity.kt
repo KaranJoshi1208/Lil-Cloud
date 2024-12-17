@@ -69,7 +69,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             LilCloudTheme {
                 WeatherScreen(viewModel)
-                getGeoLocation()
+                if(viewModel.currentCondition.value == null && !viewModel.showLoading.value) {
+                    getGeoLocation()
+                }
             }
         }
     }
@@ -112,8 +114,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        if(viewModel.currentCondition.value == null) {
+        if(viewModel.currentCondition.value == null && !viewModel.showLoading.value) {
             getGeoLocation()
         }
     }
