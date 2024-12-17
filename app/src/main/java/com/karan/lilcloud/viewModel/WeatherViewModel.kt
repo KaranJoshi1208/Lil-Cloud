@@ -7,19 +7,16 @@ import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.ContentInfoCompat
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.karan.lilcloud.MainActivity
 import com.karan.lilcloud.R
 import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.repository.WeatherRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -32,23 +29,25 @@ class WeatherViewModel( application: Application) : AndroidViewModel(application
     val locationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
 
     var showDialog = mutableStateOf<Boolean>(false)
+    var showLoading = mutableStateOf<Boolean>(false)
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
     var currentCondition = mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
-        viewModelScope.launch {
+
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 getLocationInfo("$lat,$lon")
+                geoLocation.value?.let {
+                    getCurrentCondition(geoLocation.value!!.key.toString())
+                } ?: Log.d("HowsTheWeather", "Location Response is NULL")
+
             } catch (e: Exception) {
                 Log.e("HowsTheWeather", "Error fetching geoLocation", e)
+            } finally {
+                showLoading.value = false
+                Log.d("HowsTheWeather", "Loading Screen : ${showLoading.value}")
             }
-            geoLocation.value?.let {
-                try {
-                    getCurrentCondition(geoLocation.value!!.key.toString())
-                } catch (e: Exception) {
-                    Log.e("HowsTheWeather", "Error fetching CurrentCondition", e)
-                }
-            } ?: Log.d("HowsTheWeather", "Location Response is NULL")
         }
     }
 

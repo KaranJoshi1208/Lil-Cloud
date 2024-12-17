@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.karan.lilcloud.composeUI.EnableLocationDialog
+import com.karan.lilcloud.composeUI.Loading
 import com.karan.lilcloud.composeUI.WeatherScreen
 import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.ui.theme.LilCloudTheme
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                Toast.makeText(this@MainActivity, "Location Granted 👍", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Location Permission Granted 👍💦", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(
                     this@MainActivity,
@@ -65,22 +66,12 @@ class MainActivity : ComponentActivity() {
         window.navigationBarColor = Color.Transparent.toArgb()
 
 
-        val lat = 30.316496
-        val lon = 78.032188
-        val city = "London"
-
         setContent {
             LilCloudTheme {
                 WeatherScreen(viewModel)
                 getGeoLocation()
-//                EnableLocationDialog(
-//                    {},
-//                    {}
-//                )
             }
         }
-//        viewModel.loadCurrentWeather(30.316496, 78.032188, "metric")
-
     }
 
     private fun getGeoLocation() {
@@ -100,9 +91,8 @@ class MainActivity : ComponentActivity() {
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
-
-        // check if location services are enabled on user's device
-        // TODO("isLocationServiceEnabled")
+        viewModel.showLoading.value = true                             /// here I am , fuckin around !!
+        Log.d("HowsTheWeather", "Loading Screen : ${viewModel.showLoading.value}")
 
         viewModel.locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
             .addOnSuccessListener { location ->
