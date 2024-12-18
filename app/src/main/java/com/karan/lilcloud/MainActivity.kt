@@ -65,13 +65,11 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = Color.Transparent.toArgb()
         window.navigationBarColor = Color.Transparent.toArgb()
 
+        getGeoLocation()
 
         setContent {
             LilCloudTheme {
                 WeatherScreen(viewModel)
-                if(viewModel.currentCondition.value == null && !viewModel.showLoading.value) {
-                    getGeoLocation()
-                }
             }
         }
     }
