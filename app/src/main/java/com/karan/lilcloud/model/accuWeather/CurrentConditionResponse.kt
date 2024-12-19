@@ -6,8 +6,8 @@ import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse.CurrentCond
 
 class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
     data class CurrentConditionResponseItem(
-        @SerializedName("ApparentTemperature")
-        val apparentTemperature: ApparentTemperature?,
+//        @SerializedName("ApparentTemperature")
+//        val apparentTemperature: ApparentTemperature?,
         @SerializedName("Ceiling")
         val ceiling: Ceiling?,
         @SerializedName("CloudCover")
@@ -18,34 +18,34 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
         val epochTime: Int?,
         @SerializedName("HasPrecipitation")
         val hasPrecipitation: Boolean?,
-        @SerializedName("IndoorRelativeHumidity")
-        val indoorRelativeHumidity: Int?,
+//        @SerializedName("IndoorRelativeHumidity")
+//        val indoorRelativeHumidity: Int?,
         @SerializedName("IsDayTime")
         val isDayTime: Boolean?,
         @SerializedName("Link")
         val link: String?,
-        @SerializedName("LocalObservationDateTime")
-        val localObservationDateTime: String?,
+//        @SerializedName("LocalObservationDateTime")
+//        val localObservationDateTime: String?,
         @SerializedName("MobileLink")
         val mobileLink: String?,
-        @SerializedName("ObstructionsToVisibility")
-        val obstructionsToVisibility: String?,
-        @SerializedName("Past24HourTemperatureDeparture")
-        val past24HourTemperatureDeparture: Past24HourTemperatureDeparture?,
+//        @SerializedName("ObstructionsToVisibility")
+//        val obstructionsToVisibility: String?,
+//        @SerializedName("Past24HourTemperatureDeparture")
+//        val past24HourTemperatureDeparture: Past24HourTemperatureDeparture?,
         @SerializedName("Precip1hr")
         val precip1hr: Precip1hr?,
-        @SerializedName("PrecipitationSummary")
-        val precipitationSummary: PrecipitationSummary?,
+//        @SerializedName("PrecipitationSummary")
+//        val precipitationSummary: PrecipitationSummary?,
         @SerializedName("PrecipitationType")
         val precipitationType: Any?,
         @SerializedName("Pressure")
         val pressure: Pressure?,
-        @SerializedName("PressureTendency")
-        val pressureTendency: PressureTendency?,
+//        @SerializedName("PressureTendency")
+//        val pressureTendency: PressureTendency?,
         @SerializedName("RealFeelTemperature")
         val realFeelTemperature: RealFeelTemperature?,
-        @SerializedName("RealFeelTemperatureShade")
-        val realFeelTemperatureShade: RealFeelTemperatureShade?,
+//        @SerializedName("RealFeelTemperatureShade")
+//        val realFeelTemperatureShade: RealFeelTemperatureShade?,
         @SerializedName("RelativeHumidity")
         val relativeHumidity: Int?,
         @SerializedName("Temperature")
@@ -62,14 +62,14 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
         val weatherIcon: Int?,
         @SerializedName("WeatherText")
         val weatherText: String?,
-        @SerializedName("WetBulbGlobeTemperature")
-        val wetBulbGlobeTemperature: WetBulbGlobeTemperature?,
-        @SerializedName("WetBulbTemperature")
-        val wetBulbTemperature: WetBulbTemperature?,
+//        @SerializedName("WetBulbGlobeTemperature")
+//        val wetBulbGlobeTemperature: WetBulbGlobeTemperature?,
+//        @SerializedName("WetBulbTemperature")
+//        val wetBulbTemperature: WetBulbTemperature?,
         @SerializedName("Wind")
         val wind: Wind?,
-        @SerializedName("WindChillTemperature")
-        val windChillTemperature: WindChillTemperature?,
+//        @SerializedName("WindChillTemperature")
+//        val windChillTemperature: WindChillTemperature?,
         @SerializedName("WindGust")
         val windGust: WindGust?
     ) {
