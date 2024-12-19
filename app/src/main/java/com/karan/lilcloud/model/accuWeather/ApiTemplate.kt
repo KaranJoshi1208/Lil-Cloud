@@ -15,7 +15,6 @@ interface ApiTemplate {
     suspend fun getLocationInfo(
         @Query("q") geoPosition : String,
         @Query("apikey") apiKey : String,
-        @Query("details") details : String = "true"
     ) : GeoPositionResponse
 
 
