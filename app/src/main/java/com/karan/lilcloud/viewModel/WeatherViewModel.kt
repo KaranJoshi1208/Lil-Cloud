@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class WeatherViewModel( application: Application) : AndroidViewModel(application) {
+open class WeatherViewModel( application: Application) : AndroidViewModel(application) {
 
     private val repo: WeatherRepository = WeatherRepository()
     private val applicationContext = application.applicationContext
