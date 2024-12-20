@@ -204,7 +204,6 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text("Hellow CAT !!!")
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -217,52 +216,83 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
 //            elevation = CardElevation(),
 //            shape = MaterialTheme.shapes.medium
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(12.dp)
-                ,
-            )
-            Column(
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                ,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Weather icon (use Image or an icon URL)
-                Image(
-                    painter = painterResource(id = R.drawable.cloudy_sunny),
-                    contentDescription = "Weather Icon",
-                    modifier = Modifier.size(64.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Temperatures
-                Text(
-                    text = "23°C",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Description
-                Text(
-                    text = "weatherData.description",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-
-                Spacer(modifier = Modifier
-                    .height(16.dp)
-                )
-
-                // Weather details (Humidity, Wind Speed)
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
+                    Text(
+                        text = "Humidity"
+                    )
 
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(2.dp)
+                            .background(Color.Gray)
+                            .padding(horizontal = 4.dp)
+                        ,
+                    )
+
+
+                    Text(
+                        text = "Real Feel"
+                    )
+                    Text(
+                        text = "UV"
+                    )
+                    Text(
+                        text = "Pressure"
+                    )
+                    Text(
+                        text = "Chances of Rain"
+                    )
+                }
+
+
+                Spacer(
+                    modifier = Modifier
+                )
+
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.cloudy_sunny),
+                        contentDescription = "Weather Icon",
+                        modifier = Modifier.size(84.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row {
+                        Text(
+                            text = "23",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red
+                        )
+                        Text(
+                            text = " / ",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "17",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Blue
+                        )
+                    }
                 }
             }
         }
