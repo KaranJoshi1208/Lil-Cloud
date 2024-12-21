@@ -9,19 +9,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse.CurrentConditionResponseItem
@@ -220,56 +223,114 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+                    .padding(12.dp)
                 ,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .padding(start = 8.dp)
+                    ,
+//                    verticalArrangement = Arrangement.SpaceEvenly,
+
                 ) {
                     Text(
-                        text = "Humidity"
+                        text = "Humidity",
+                        fontSize = 12.sp,
+                        color = Color(0x50FFFFFF),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                        ,
                     )
-
                     Spacer(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(2.dp)
-                            .background(Color.Gray)
+                            .fillMaxWidth(0.7f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+//                            .padding(horizontal = 4.dp)
+                        ,
+                    )
+                    Text(
+                        text = "Real Feel",
+                        fontSize = 12.sp,
+                        color = Color(0x50FFFFFF),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                        ,
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
                             .padding(horizontal = 4.dp)
                         ,
                     )
-
-
                     Text(
-                        text = "Real Feel"
+                        text = "UV",
+                        fontSize = 12.sp,
+                        color = Color(0x50FFFFFF),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                        ,
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                            .padding(horizontal = 4.dp)
+                        ,
                     )
                     Text(
-                        text = "UV"
+                        text = "Pressure",
+                        fontSize = 12.sp,
+                        color = Color(0x50FFFFFF),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                        ,
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                            .padding(horizontal = 4.dp)
+                        ,
                     )
                     Text(
-                        text = "Pressure"
+                        text = "Chances of Rain",
+                        fontSize = 12.sp,
+                        color = Color(0x50FFFFFF),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                        ,
                     )
-                    Text(
-                        text = "Chances of Rain"
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                            .padding(horizontal = 4.dp)
+                        ,
                     )
                 }
 
 
-                Spacer(
-                    modifier = Modifier
-                )
-
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(12.dp)
+//                        .weight(1f)
                     ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.cloudy_sunny),
                         contentDescription = "Weather Icon",
-                        modifier = Modifier.size(84.dp)
+                        modifier = Modifier.size(100.dp)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -277,18 +338,18 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
                     Row {
                         Text(
                             text = "23",
-                            style = MaterialTheme.typography.headlineMedium,
+                            fontSize = 32.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Red
                         )
                         Text(
                             text = " / ",
-                            style = MaterialTheme.typography.headlineMedium,
+                            fontSize = 32.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "17",
-                            style = MaterialTheme.typography.headlineMedium,
+                            fontSize = 32.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Blue
                         )
