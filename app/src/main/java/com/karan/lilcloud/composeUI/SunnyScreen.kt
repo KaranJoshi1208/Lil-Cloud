@@ -5,6 +5,7 @@ import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -28,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -335,6 +339,152 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun Wind() {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 72.dp)
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Max)
+//                .height(200.dp)
+                .padding(16.dp)
+            ,
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0x08FFFFFF),
+                ),
+
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(start = 16.dp, bottom = 12.dp)
+                    ,
+
+                ) {
+                    Text(
+                        text = "Wind",
+//                        fontWeight = FontWeight.,
+                        color = Color.White,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    InfoElement(
+                        name = "Speed",
+                        value = "12.7" + "Km/h"
+                    )
+                    InfoElement(
+                        name = "Direction",
+                        value = "ESE"
+                    )
+
+                    InfoElement(
+                        name = "Degrees",
+                        value = "113" + "°"
+                    )
+
+                    InfoElement(
+                        name = "Gust Speed",
+                        value = "23.7" + "Km/h"
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(130.dp)
+                            .clip(shape = CircleShape)
+                            .border(width = 3.dp, color = Color.Black, shape = CircleShape)
+
+                    ) {
+                        // Compass directions
+                        Text(
+                            text = "N",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 4.dp),
+                            color = Color(0xFF8B0000)
+                        )
+                        Text(
+                            text = "E",
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 10.dp),
+                            color = Color.White
+                        )
+                        Text(
+                            text = "S",
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 4.dp),
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "W",
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = 8.dp),
+                            color = Color.White
+                        )
+
+                        // Needle (arrow)
+
+                        Box(
+                            modifier = Modifier
+                                .padding(30.dp)
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                            ,
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            Spacer(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxHeight(0.7f)
+                                    .width(2.dp)
+                                    .background(Color(0xFFFFD700))
+                                ,
+
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun EnableLocationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
@@ -402,7 +552,6 @@ fun InfoElement(name : String = "", value : String = "") {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
-
         ,
         horizontalArrangement = Arrangement.Absolute.SpaceBetween
     ) {
@@ -436,7 +585,8 @@ private fun SunnyPreview() {
                     )
                 )
         ) {
-            WeatherDetails(rememberScrollState(0), Modifier.padding(top = 72.dp))
+//            WeatherDetails(rememberScrollState(0), Modifier.padding(top = 72.dp))
+            Wind()
         }
     }
 }
