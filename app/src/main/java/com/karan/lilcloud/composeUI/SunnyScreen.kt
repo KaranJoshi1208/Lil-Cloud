@@ -9,8 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,8 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -197,14 +197,12 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-//            .background(color = Color.Transparent)
             .verticalScroll(scrollState, enabled = true)
             .then(modifier)
         ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text("Hellow CAT !!!")
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -213,56 +211,123 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x08FFFFFF),
 
-            )
-//            elevation = CardElevation(),
-//            shape = MaterialTheme.shapes.medium
+            ),
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(12.dp)
-                ,
-            )
-            Column(
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .height(IntrinsicSize.Min)
+                    .padding(12.dp)
+                ,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Weather icon (use Image or an icon URL)
-                Image(
-                    painter = painterResource(id = R.drawable.cloudy_sunny),
-                    contentDescription = "Weather Icon",
-                    modifier = Modifier.size(64.dp)
-                )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Temperatures
-                Text(
-                    text = "23°C",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Description
-                Text(
-                    text = "weatherData.description",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-
-                Spacer(modifier = Modifier
-                    .height(16.dp)
-                )
-
-                // Weather details (Humidity, Wind Speed)
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .weight(0.8f)
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.windy),
+                        contentDescription = "Weather Icon",
+                        modifier = Modifier.size(100.dp)
+                    )
 
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row {
+                        Text(
+                            text = "23",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red
+                        )
+                        Text(
+                            text = " / ",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "17",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Blue
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .padding(start = 16.dp)
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally
+
+                ) {
+                    InfoElement(
+                        name = "Humidity",
+                        value = "34" + "%"
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                        ,
+                    )
+
+                    InfoElement(
+                        name = "Real Feel",
+                        value = "12" + "°C"
+                    )
+
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                        ,
+                    )
+
+                    InfoElement(
+                        name = "UV Index",
+                        value = "2"
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                        ,
+                    )
+
+                    InfoElement(
+                        name = "Pressure",
+                        value = "1015" + " mbar"
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                        ,
+                    )
+
+                    InfoElement(
+                        name = "Chances of Rain",
+                        value = "4" + "%"
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(0.5.dp)
+                            .background(Color(0x33FFFFFF))
+                        ,
+                    )
                 }
             }
         }
@@ -328,6 +393,29 @@ fun Loading() {
                     .size(100.dp)
             )
         }
+    }
+}
+
+@Composable
+fun InfoElement(name : String = "", value : String = "") {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+
+        ,
+        horizontalArrangement = Arrangement.Absolute.SpaceBetween
+    ) {
+        Text(
+            text = name,
+            fontSize = 12.sp,
+            color = Color(0x50FFFFFF),
+        )
+        Text(
+            text = value,
+            fontSize = 12.sp,
+            color = Color(0x80FFFFFF),
+        )
     }
 }
 
