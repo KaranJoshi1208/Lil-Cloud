@@ -1,10 +1,16 @@
 package com.karan.lilcloud.composeUI
 
 import android.app.Application
+import android.graphics.drawable.shapes.Shape
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,20 +24,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -66,6 +86,7 @@ import com.karan.lilcloud.model.accuWeather.GeoPositionResponse.Region
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse.TimeZone
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 
@@ -335,6 +356,128 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun Wind() {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 72.dp)
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(16.dp)
+            ,
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0x08FFFFFF),
+                ),
+
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(horizontal = 12.dp)
+                    ,
+
+                ) {
+                    InfoElement(
+                        name = "Wind Speed",
+                        value = "12.7" + "Km/h"
+                    )
+                    InfoElement(
+                        name = "Wind Direction",
+                        value = "ESE"
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                    ,
+
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(150.dp)
+                            .background(Color.Transparent, shape = CircleShape)
+                            .border(2.dp, Color.Blue, shape = CircleShape)
+                    ) {
+                        // Compass directions
+                        Text(
+                            text = "N",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 8.dp),
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "E",
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 10.dp),
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "S",
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 8.dp),
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "W",
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = 10.dp),
+                            color = Color.Black
+                        )
+
+                        // Needle (arrow)
+
+                        Box(
+                            modifier = Modifier
+                                .padding(30.dp)
+                                .fillMaxSize()
+                                .background(Color.Green)
+                            ,
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxHeight(0.7f)
+                                    .width(2.dp)
+                                    .background(Color.Red)
+
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Red)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun EnableLocationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
@@ -402,7 +545,6 @@ fun InfoElement(name : String = "", value : String = "") {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
-
         ,
         horizontalArrangement = Arrangement.Absolute.SpaceBetween
     ) {
@@ -436,7 +578,8 @@ private fun SunnyPreview() {
                     )
                 )
         ) {
-            WeatherDetails(rememberScrollState(0), Modifier.padding(top = 72.dp))
+//            WeatherDetails(rememberScrollState(0), Modifier.padding(top = 72.dp))
+            Wind()
         }
     }
 }
@@ -570,3 +713,105 @@ class FakeWeatherViewModel : WeatherViewModel(Application()) {
         )
     }
 }
+
+
+@Composable
+fun StylishCompass(windDirection: Float) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Outer Circle
+        Canvas(modifier = Modifier.size(250.dp)) {
+            drawCircle(
+                color = Color.LightGray,
+                radius = size.minDimension / 2,
+                style = Stroke(width = 8.dp.toPx())
+            )
+        }
+
+        // Directions (N, E, S, W)
+        Text(
+            text = "N",
+            modifier = Modifier.align(Alignment.TopCenter),
+            fontSize = 20.sp,
+            color = Color.Black
+        )
+        Text(
+            text = "E",
+            modifier = Modifier.align(Alignment.CenterEnd),
+            fontSize = 20.sp,
+            color = Color.Black
+        )
+        Text(
+            text = "S",
+            modifier = Modifier.align(Alignment.BottomCenter),
+            fontSize = 20.sp,
+            color = Color.Black
+        )
+        Text(
+            text = "W",
+            modifier = Modifier.align(Alignment.CenterStart),
+            fontSize = 20.sp,
+            color = Color.Black
+        )
+
+        // Rotating Arrow
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(150.dp)
+                .rotate(windDirection) // Apply smooth rotation
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawLine(
+                    color = Color.Red,
+                    start = Offset(size.width / 2, size.height),
+                    end = Offset(size.width / 2, size.height / 4),
+                    strokeWidth = 8f,
+                    cap = StrokeCap.Round
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CompassScreen() {
+    var windDirection by remember { mutableFloatStateOf(0f) }
+
+    // Smooth wind direction animation
+    val animatedWindDirection by animateFloatAsState(
+        targetValue = windDirection,
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing), label = ""
+    )
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            windDirection = (0..360).random().toFloat() // Random wind direction
+            delay(2000L) // Change direction every 2 seconds
+        }
+    }
+
+    StylishCompass(windDirection = animatedWindDirection)
+}
+
+
+//@Preview
+//@Composable
+//fun PreviewCompass() {
+//    var windDirection by remember { mutableFloatStateOf(0f) }
+//
+//    // Simulate wind direction changes smoothly
+//    LaunchedEffect(Unit) {
+//        while (true) {
+//            windDirection += 1f
+//            if (windDirection >= 360f) windDirection = 0f
+//            delay(16L) // ~60 FPS
+//        }
+//    }
+//
+//    StylishCompass(windDirection = windDirection)
+//}
