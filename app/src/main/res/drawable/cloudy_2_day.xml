@@ -73,7 +73,7 @@
                 android:pathData="M 0 -5 C 2.76142374915 -5 5 -2.76142374915 5 0 C 5 2.76142374915 2.76142374915 5 0 5 C -2.76142374915 5 -5 2.76142374915 -5 0 C -5 -2.76142374915 -2.76142374915 -5 0 -5 Z" />
         </group>
         <path
-            android:fillColor="#57a0ee"
+            android:fillColor="#91c0f8"
             android:strokeColor="#fff"
             android:strokeWidth="1.2"
             android:strokeLineJoin="round"
