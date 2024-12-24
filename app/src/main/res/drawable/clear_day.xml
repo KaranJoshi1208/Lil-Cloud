@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="56dp"
+    android:height="48dp"
+    android:viewportWidth="56"
+    android:viewportHeight="48">
+
+    <group
+            android:translateX="16"
+            android:translateY="14">
+        <path
+            android:strokeColor="#ffa500"
+            android:strokeWidth="2"
+            android:strokeLineCap="round"
+            android:pathData="M undefined undefined L undefined 3" />
+        <group>
+            <path
+                android:strokeColor="#ffa500"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M undefined undefined L undefined 3" />
+        </group>
+        <group>
+            <path
+                android:strokeColor="#ffa500"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M undefined undefined L undefined 3" />
+        </group>
+        <group>
+            <path
+                android:strokeColor="#ffa500"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M undefined undefined L undefined 3" />
+        </group>
+        <group
+                android:scaleX="-1"
+                android:scaleY="0">
+            <path
+                android:strokeColor="#ffa500"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M undefined undefined L undefined 3" />
+        </group>
+        <group>
+            <path
+                android:strokeColor="#ffa500"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M undefined undefined L undefined 3" />
+        </group>
+        <group>
+            <path
+                android:strokeColor="#ffa500"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M undefined undefined L undefined 3" />
+        </group>
+        <group>
+            <path
+                android:strokeColor="#ffa500"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M undefined undefined L undefined 3" />
+        </group>
+        <path
+            android:fillColor="#ffa500"
+            android:strokeColor="#ffa500"
+            android:strokeWidth="2"
+            android:pathData="M 0 -5 C 2.76142374915 -5 5 -2.76142374915 5 0 C 5 2.76142374915 2.76142374915 5 0 5 C -2.76142374915 5 -5 2.76142374915 -5 0 C -5 -2.76142374915 -2.76142374915 -5 0 -5 Z" />
+    </group>
+</vector>

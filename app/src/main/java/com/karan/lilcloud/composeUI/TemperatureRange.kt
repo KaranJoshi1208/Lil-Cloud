@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
@@ -110,7 +111,8 @@ fun TemperaturePacket() {
         )
 
         Image(
-            painter = painterResource(id = R.drawable.cloudy_3_day),
+            painter = rememberVectorPainter(ImageVector.vectorResource(id = R.drawable.cloudy_3_day)),
+//            painter = painterResource(id = R.drawable.cloudy),
             contentDescription = "Weather Icon"
         )
     }
