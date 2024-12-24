@@ -71,6 +71,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Coil (For SVG support)
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-svg:2.4.0")
+
     //Google's FusedLocationProviderClient
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
@@ -88,10 +92,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
 
     //WeatherView
-//    implementation("com.github.MatteoBattilana:WeatherView:3.0.0")
-    //
     implementation("androidx.activity:activity-ktx:1.9.3")
-//    implementation("com.github.Dimezis:BlurView:version-2.0.3")
-//    implementation("com.github.bumptech:glide:glide:4.12.0")
-
+    
 }
