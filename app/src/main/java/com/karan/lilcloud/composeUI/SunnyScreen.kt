@@ -383,7 +383,7 @@ fun Wind() {
                     )
                     InfoElement(
                         name = "Speed",
-                        value = "12.7" + "Km/h"
+                        value = "12.7" + " Km/h"
                     )
                     InfoElement(
                         name = "Direction",
@@ -397,7 +397,7 @@ fun Wind() {
 
                     InfoElement(
                         name = "Gust Speed",
-                        value = "23.7" + "Km/h"
+                        value = "23.7" + " Km/h"
                     )
                 }
 
