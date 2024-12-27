@@ -585,8 +585,8 @@ private fun SunnyPreview() {
                     )
                 )
         ) {
-//            WeatherDetails(rememberScrollState(0), Modifier.padding(top = 72.dp))
-            Wind()
+            WeatherDetails(rememberScrollState(0), Modifier.padding(top = 72.dp))
+//            Wind()
         }
     }
 }

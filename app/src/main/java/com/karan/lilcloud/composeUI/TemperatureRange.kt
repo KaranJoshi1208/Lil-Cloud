@@ -7,10 +7,13 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -20,20 +23,15 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.VectorPainter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
-import kotlin.math.roundToInt
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun TemperatureGraph(
     temperatures: List<Float>, // List of temperature values
     hours: List<String>, // Corresponding hours
-    scrollState : ScrollState,
     modifier: Modifier = Modifier,
     lineColor: Color = Color.Black,
     pointColor: Color = MaterialTheme.colorScheme.secondary
@@ -41,85 +39,117 @@ fun TemperatureGraph(
     val maxTemp = temperatures.maxOrNull() ?: 1f
     val minTemp = temperatures.minOrNull() ?: 0f
 
-    Row(
-        modifier = Modifier
+    LazyRow(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 72.dp)
-            .height(200.dp)
-            .horizontalScroll(enabled = true, state = scrollState)
-
+            .padding(top = 72.dp)
+            .height(300.dp) // Increased height to accommodate temperature packets
     ) {
+        items(temperatures.size) { index ->
+            Column(
+                modifier = Modifier.width(80.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Render the temperature graph point
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(0.7f) // Allocate 70% height for the graph
+                        .padding(bottom = 8.dp)
+                ) {
+                    Canvas(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        val graphHeight = size.height
+                        val yScale = graphHeight / (maxTemp - minTemp)
 
+                        // Calculate Y position for the temperature
+                        val y = graphHeight - ((temperatures[index] - minTemp) * yScale)
 
-        Canvas(
-            modifier = modifier
-                .width((temperatures.size * 50).dp)
-                .height(200.dp)
-                .padding(16.dp)
-        ) {
-            val graphWidth = size.width
-            val graphHeight = size.height
+                        // Draw the point
+                        drawCircle(
+                            color = pointColor,
+                            radius = 4.dp.toPx(),
+                            center = androidx.compose.ui.geometry.Offset(size.width / 2, y)
+                        )
 
-            // Calculate scale for temperature values
-            val yScale = graphHeight / (maxTemp - minTemp)
-            val xSpacing = graphWidth / (temperatures.size - 1)
-
-            // Path for the line graph
-            val path = Path().apply {
-                temperatures.forEachIndexed { index, temp ->
-                    val x = index * xSpacing
-                    val y = graphHeight - ((temp - minTemp) * yScale)
-                    if (index == 0) moveTo(x, y) else lineTo(x, y)
+                        // Draw the connecting line (if not the first point)
+                        if (index > 0) {
+                            val prevY = graphHeight - ((temperatures[index - 1] - minTemp) * yScale)
+                            drawLine(
+                                color = lineColor,
+                                strokeWidth = 2.dp.toPx(),
+                                start = androidx.compose.ui.geometry.Offset(-size.width / 2, prevY),
+                                end = androidx.compose.ui.geometry.Offset(size.width / 2, y)
+                            )
+                        }
+                    }
                 }
-            }
 
-
-            // Draw the graph line
-            drawPath(
-                path = path,
-                color = lineColor,
-                style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-            )
-
-            // Draw points on the graph
-            temperatures.forEachIndexed { index, temp ->
-                val x = index * xSpacing
-                val y = graphHeight - ((temp - minTemp) * yScale)
-                drawCircle(
-                    color = pointColor,
-                    radius = 4.dp.toPx(),
-                    center = androidx.compose.ui.geometry.Offset(x, y)
-                )
+                // Render the temperature packet below the graph point
+                TemperaturePacket()
             }
         }
     }
 }
 
 
+
 @Composable
 fun TemperaturePacket() {
     Column (
         modifier = Modifier
-            .padding(top = 144.dp, start = 20.dp)
-            .height(175.dp)
+            .height(200.dp)
             .width(50.dp)
         ,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "34" + "°C",
-        )
+            text = "34" + "°",
+            fontSize = 16.sp,
+            )
 
-        Image(
-            painter = rememberVectorPainter(ImageVector.vectorResource(id = R.drawable.cloudy_3_day)),
-//            painter = painterResource(id = R.drawable.cloudy),
-            contentDescription = "Weather Icon"
-        )
+        Box() {
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.cloudy_3_day),
+                contentDescription = "Weather Icon",
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
+                    .size(50.dp)
+                ,
+            )
+            Text(
+                text = "1",
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+            )
+        }
     }
-
 }
 
-@Preview(showBackground = true, showSystemUi = true,)
+@Composable
+fun TemperatureRange(
+//    temperatures: List<Float>, // List of temperature values
+//    hours: List<String>, // Corresponding hours
+//    scrollState : ScrollState,
+//    modifier: Modifier,
+//    lineColor: Color,
+//    pointColor: Color
+) {
+    LazyRow(
+        modifier = Modifier
+            .padding(top = 72.dp, start = 16.dp, end = 16.dp)
+            .fillMaxWidth()
+//            .horizontalScroll(scrollState)
+    ){
+        items(12) {i ->
+            TemperaturePacket()
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = false,)
 @Composable
 fun TemperatureScreen() {
     val temperatures = listOf(22f, 24f, 26f, 25f, 23f, 22f, 21f, 20f, 19f, 18f, 20f, 22f)
@@ -138,15 +168,15 @@ fun TemperatureScreen() {
                 )
             )
     ) {
-//        TemperatureGraph(
-//            temperatures = temperatures,
-//            hours = hours,
+        TemperatureGraph(
+            temperatures = temperatures,
+            hours = hours,
 //            scrollState = scrollState,
-//            modifier = Modifier.fillMaxWidth(),
-//            lineColor = Color.Green,
-//            pointColor = Color.Red
-//        )
-
-        TemperaturePacket()
+            modifier = Modifier.fillMaxWidth(),
+            lineColor = Color.Green,
+            pointColor = Color.Red
+        )
+//        TemperaturePacket()
+//        TemperatureRange()
     }
 }
