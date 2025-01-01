@@ -4,8 +4,8 @@
     android:width="56dp"
     android:height="48dp">
     <group
-        android:translateX="16"
-        android:translateY="14">
+        android:translateX="28"
+        android:translateY="24">
         <group
             android:translateY="9">
             <path
