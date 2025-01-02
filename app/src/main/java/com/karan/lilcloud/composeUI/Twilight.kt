@@ -1,5 +1,6 @@
 package com.karan.lilcloud.composeUI
 
+import android.widget.ProgressBar
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -11,10 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
@@ -61,16 +66,20 @@ fun Twilight() {
                 modifier = Modifier
                     .fillMaxSize()
                 ,
+//                contentAlignment = Alignment.Center
 
             ) {
                 var offset : Offset? = null
+                var c : Size? = null
 
                 Canvas(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
                 ) {
 
-                    offset = Offset((size.width/6f), 50.dp.toPx())
+                    offset = Offset((size.width/6.5f), 50.dp.toPx())
+                    val x = (size.width/6.5f)
+                    c = Size(125.dp.toPx()+x, 175.dp.toPx())
 
                     drawArc(
                         color = Color.White.copy(alpha = 0.2f),
@@ -82,7 +91,6 @@ fun Twilight() {
                         style = Stroke(width = 1.dp.toPx()),
                     )
 
-
                 }
 
                 Box(
@@ -93,8 +101,8 @@ fun Twilight() {
                         imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
                         contentDescription = "Sun",
                         modifier = Modifier
-//                            .size()
-                            .offset((offset?.x)?.dp ?: 0.dp, (offset?.y)?.dp ?: 0.dp)
+                            .size(60.dp)
+                            .offset(c?.width?.dp ?: 0.dp,c?.height?.dp ?: 0.dp)
                         ,
                     )
                 }
@@ -129,47 +137,43 @@ fun Twilight2() {
             )
         ) {
             Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .fillMaxSize(),
-            ) {
-                var radius = 0f
-                var centerX = 0f
-                var centerY = 0f
+                    .fillMaxSize()
+            ){
+                CircularProgressIndicator(
+                    progress = { .3f },
+                    color = Color.Green,
+                    trackColor = Color.Transparent,
 
-                Canvas(
                     modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    radius = 125.dp.toPx() // Radius of the arc
-                    centerX = size.width / 2
-                    centerY = size.height / 2 + 50.dp.toPx() // Adjust for arc placement
-
-                    // Draw the arc
-                    drawArc(
-                        color = Color.White.copy(alpha = 0.2f),
-                        startAngle = 0f,
-                        sweepAngle = -180f,
-                        useCenter = false,
-                        topLeft = Offset(centerX - radius, centerY - radius),
-                        size = Size(radius * 2, radius * 2),
-                        style = Stroke(width = 1.dp.toPx()),
-                    )
-
-                }
-                val angleInRadians = Math.toRadians(sunAngle.value.toDouble())
-                val sunX = centerX + radius * cos(angleInRadians).toFloat()
-                val sunY = centerY + radius * sin(angleInRadians).toFloat()
-                // Draw the sun image at calculated position
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.clear_day),
-                    contentDescription = "Sun",
-                    modifier = Modifier
-                        .offset(
-                            x = (sunX ).dp, // Offset to center the sun image
-                            y = (sunY ).dp
-                        )
-                        .wrapContentSize()
+                        .size(250.dp)
+                        .rotate(-90f)
                 )
+
+                CircularProgressIndicator(
+                    progress = { .5f },
+                    color = Color.White.copy(alpha = .2f),
+                    trackColor = Color.Transparent,
+                    strokeWidth = 1.dp,
+                    modifier = Modifier
+                        .size(250.dp)
+                        .rotate(-90f)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
+                        contentDescription = "Sun",
+                        modifier = Modifier
+                            .size(60.dp)
+                        ,
+                    )
+                }
+
             }
         }
     }
@@ -180,7 +184,6 @@ fun Twilight2() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TwilightPreview() {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -193,6 +196,6 @@ fun TwilightPreview() {
             )
     ) {
 //        SunriseSunsetPath()
-        Twilight()
+        Twilight2()
     }
 }

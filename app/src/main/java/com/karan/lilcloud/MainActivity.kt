@@ -10,10 +10,15 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
@@ -28,6 +33,7 @@ import com.google.android.gms.location.Priority
 import com.karan.lilcloud.composeUI.EnableLocationDialog
 import com.karan.lilcloud.composeUI.FakeWeatherViewModel
 import com.karan.lilcloud.composeUI.Loading
+import com.karan.lilcloud.composeUI.Twilight
 import com.karan.lilcloud.composeUI.WeatherScreen
 import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.ui.theme.LilCloudTheme
@@ -66,11 +72,24 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = Color.Transparent.toArgb()
         window.navigationBarColor = Color.Transparent.toArgb()
 
-        getGeoLocation()
+//        getGeoLocation()
 
         setContent {
             LilCloudTheme {
-                WeatherScreen(viewModel)
+//                WeatherScreen(viewModel)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0xFF152FB2),
+                                    Color(0xFF03A9F4))
+                            )
+                        )
+                ) {
+                    Twilight()
+                }
             }
         }
     }
