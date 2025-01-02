@@ -5,8 +5,10 @@ import com.karan.lilcloud.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,10 +35,13 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,6 +76,7 @@ fun Twilight() {
             ) {
                 var offset : Offset? = null
                 var c : Size? = null
+                var img = ImageBitmap.imageResource(id = R.drawable.sun)
 
                 Canvas(
                     modifier = Modifier
@@ -80,32 +86,44 @@ fun Twilight() {
                     offset = Offset((size.width/6.5f), 50.dp.toPx())
                     val x = (size.width/6.5f)
                     c = Size(125.dp.toPx()+x, 175.dp.toPx())
+                    var sweepAngle = 5f
 
-                    drawArc(
-                        color = Color.White.copy(alpha = 0.2f),
-                        startAngle = 0f,
-                        sweepAngle = -180f,
-                        useCenter = false,
-                        topLeft = offset,
-                        size = Size(250.dp.toPx(), 250.dp.toPx()),
-                        style = Stroke(width = 1.dp.toPx()),
-                    )
+                    for(i in 0 until 20) {
+                        drawArc(
+                            color = Color.White.copy(alpha = 0.2f),
+                            startAngle = 180f - sweepAngle,
+                            sweepAngle = sweepAngle,
+                            useCenter = false,
+                            topLeft = offset,
+                            size = Size(250.dp.toPx(), 250.dp.toPx()),
+                            style = Stroke(width = 1.dp.toPx()),
+                        )
+                        sweepAngle += 5f
 
+                    }
+
+
+                    scale(scaleX = 0.5f, scaleY = 0.5f) {
+                        drawImage(
+                            image = img,
+                            topLeft = Offset(size.width / 2f, size.height / 2f),
+                        )
+                    }
                 }
 
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize()
-                ) {
-                    Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
-                        contentDescription = "Sun",
-                        modifier = Modifier
-                            .size(60.dp)
-                            .offset(c?.width?.dp ?: 0.dp,c?.height?.dp ?: 0.dp)
-                        ,
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .wrapContentSize()
+//                ) {
+//                    Image(
+//                        imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
+//                        contentDescription = "Sun",
+//                        modifier = Modifier
+//                            .size(60.dp)
+//                            .offset(c?.width?.dp ?: 0.dp,c?.height?.dp ?: 0.dp)
+//                        ,
+//                    )
+//                }
             }
         }
     }
@@ -113,14 +131,13 @@ fun Twilight() {
 
 @Composable
 fun Twilight2() {
-    // Current angle of the sun
-    val sunAngle = remember { mutableFloatStateOf(0f) } // Start at 0 degrees (horizon)
+    val sunAngle = remember { mutableFloatStateOf(0f) }
 
     // Animate the angle (you can customize this logic for real-time animation)
     LaunchedEffect(Unit) {
         while (true) {
-            sunAngle.value = (sunAngle.value + 1f) % 180f // Animate from 0° to 180°
-            delay(50L) // Adjust for animation speed
+            sunAngle.floatValue = (sunAngle.floatValue + 1f) % 180f
+            delay(50L)
         }
     }
 
@@ -143,9 +160,8 @@ fun Twilight2() {
             ){
                 CircularProgressIndicator(
                     progress = { .3f },
-                    color = Color.Green,
+                    color = Color.Yellow.copy(alpha = .5f),
                     trackColor = Color.Transparent,
-
                     modifier = Modifier
                         .size(250.dp)
                         .rotate(-90f)
@@ -161,16 +177,35 @@ fun Twilight2() {
                         .rotate(-90f)
                 )
 
-                Box(
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
-                        .wrapContentSize()
+                        .fillMaxWidth()
+
                 ) {
+                    Text(
+                        text = "6:00" + " am",
+                        fontSize = 16.sp,
+                        color = Color.White.copy(alpha = .4f),
+                        modifier = Modifier
+
+                    )
+
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
                         contentDescription = "Sun",
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(70.dp)
                         ,
+                    )
+
+                    Text(
+                        text = "7:00"+" pm",
+                        fontSize = 16.sp,
+                        color = Color.White.copy(alpha = .4f),
+                        modifier = Modifier
+
                     )
                 }
 
@@ -196,6 +231,6 @@ fun TwilightPreview() {
             )
     ) {
 //        SunriseSunsetPath()
-        Twilight2()
+        Twilight()
     }
 }
