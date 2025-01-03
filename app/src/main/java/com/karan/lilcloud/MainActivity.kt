@@ -76,20 +76,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LilCloudTheme {
-//                WeatherScreen(viewModel)
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color(0xFF152FB2),
-                                    Color(0xFF03A9F4))
-                            )
-                        )
-                ) {
-                    Twilight()
-                }
+                WeatherScreen(viewModel)
             }
         }
     }

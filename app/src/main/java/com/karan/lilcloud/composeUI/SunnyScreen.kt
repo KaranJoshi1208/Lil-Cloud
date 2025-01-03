@@ -79,13 +79,6 @@ fun WeatherScreen(
     modifier: Modifier = Modifier /* getBg : () -> Int */
 ) {
 
-//    if (viewModel.showDialog.value) {
-//        EnableLocationDialog(
-//            { viewModel.showLocationSettings() },
-//            { viewModel.showDialog.value = false }
-//        )
-//    }
-
     val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
@@ -237,7 +230,7 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
                     Image(
                         painter = painterResource(id = R.drawable.windy),
                         contentDescription = "Weather Icon",
-                        modifier = Modifier.size(100.dp)
+                        modifier = Modifier.size(120.dp)
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -266,7 +259,7 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .weight(1f)
+                        .weight(0.8f)
                         .padding(start = 16.dp)
                     ,
                     horizontalAlignment = Alignment.CenterHorizontally

@@ -18,15 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -36,8 +31,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -54,7 +47,7 @@ fun Twilight(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(180.dp)
             ,
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x12FFFFFF)
@@ -75,15 +68,15 @@ fun Twilight(
                 ) {
 
                     offset = Offset(55.dp.toPx(), 25.dp.toPx())
-                    var start = -180f
+                    var start = -170f
                     var arcColor = Color.Yellow
 
-                    for(i in 0 until 19) {
+                    for(i in 0 until 32) {
                         if(i != progress ) {
                             drawArc(
                                 color = arcColor,
                                 startAngle = start,
-                                sweepAngle = 5f,
+                                sweepAngle = 2.5f,
                                 useCenter = false,
                                 topLeft = offset,
                                 size = Size(250.dp.toPx(), 250.dp.toPx()),
@@ -92,7 +85,7 @@ fun Twilight(
                         } else {
                             arcColor = Color.White.copy(alpha = 0.2f)
                         }
-                        start += 10f
+                        start += 5f
                     }
                 }
 
@@ -100,7 +93,7 @@ fun Twilight(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    val radian = ((180f - progress*10) - 2.5) * PI/180.0f
+                    val radian = ((170f - progress*5) - 1.25) * PI/180.0f
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
                         contentDescription = "Sun",
@@ -113,7 +106,7 @@ fun Twilight(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.25f)
+                            .fillMaxHeight(0.3f)
                             .align(Alignment.BottomCenter)
                     ) {
                         Spacer(
@@ -132,10 +125,8 @@ fun Twilight(
                             Text(text = "5:30", color = Color.White.copy(alpha = 0.4f))
                             Text(text = "6:20", color = Color.White.copy(alpha = 0.4f))
                         }
-
                     }
                 }
-
             }
         }
     }
@@ -157,7 +148,6 @@ fun TwilightPreview() {
                 )
             )
     ) {
-//        SunriseSunsetPath()
-        Twilight(12)
+        Twilight(16)
     }
 }
