@@ -79,6 +79,13 @@ fun WeatherScreen(
     modifier: Modifier = Modifier /* getBg : () -> Int */
 ) {
 
+    if (viewModel.showDialog.value) {
+        EnableLocationDialog(
+            { viewModel.showLocationSettings() },
+            { viewModel.showDialog.value = false }
+        )
+    }
+
     val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
