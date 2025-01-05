@@ -190,6 +190,9 @@ fun WeatherInfo(viewModel: WeatherViewModel, scrollState: ScrollState, modifier:
             fontWeight = FontWeight.Thin,
             color = Color.White,
         )
+
+        WeatherDetails(Modifier.padding(top = 144.dp, start = 16.dp, end = 16.dp))
+        Wind(Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
     }
 }
 
@@ -206,7 +209,6 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
             ,
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x08FFFFFF),
@@ -336,12 +338,12 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Wind() {
+fun Wind(modifier : Modifier) {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 72.dp)
+            .then(modifier)
         ,
         horizontalAlignment = Alignment.CenterHorizontally
 
@@ -350,8 +352,6 @@ fun Wind() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Max)
-//                .height(200.dp)
-                .padding(16.dp)
             ,
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x08FFFFFF),

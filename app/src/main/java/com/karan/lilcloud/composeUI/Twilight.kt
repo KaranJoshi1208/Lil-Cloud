@@ -38,11 +38,12 @@ import kotlin.math.sin
 @Composable
 fun Twilight(
     progress : Int = 10,
+    modifier : Modifier,
 ) {
 
     Column(
         modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 144.dp)
+            .then(modifier)
     ) {
         Card(
             modifier = Modifier
@@ -148,6 +149,6 @@ fun TwilightPreview() {
                 )
             )
     ) {
-        Twilight(16)
+        Twilight(16, Modifier)
     }
 }
