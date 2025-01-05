@@ -11,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.gson.Gson
 import com.karan.lilcloud.R
 import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
@@ -18,6 +19,8 @@ import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Cache
+import java.io.File
 import java.util.Calendar
 
 open class WeatherViewModel( application: Application) : AndroidViewModel(application) {
@@ -34,6 +37,15 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
     var currentCondition = mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
+
+        val cacheFile = File(applicationContext.cacheDir, "current_condition.json")
+        if(cacheFile.exists()) {
+            val json = cacheFile.readText()
+            currentCondition.value = Gson().fromJson(json, CurrentConditionResponse.CurrentConditionResponseItem::class.java)
+            Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
+            Log.d("HowsTheWeather", currentCondition.value.toString())
+            return
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -65,6 +77,12 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         try {
             val response = repo.getCurrentCondition(locationKey)
             currentCondition.value = response[0]
+
+            // caching
+            val json = Gson().toJson(currentCondition.value)
+            val cacheFile = File(applicationContext.cacheDir, "current_condition.json")
+            cacheFile.writeText(json)
+
             Log.d("HowsTheWeather", currentCondition.value.toString())
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching CurrentCondition", e)
