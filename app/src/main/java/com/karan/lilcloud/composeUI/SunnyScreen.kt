@@ -78,6 +78,7 @@ fun WeatherScreen(
     viewModel: WeatherViewModel,
     modifier: Modifier = Modifier /* getBg : () -> Int */
 ) {
+    val scrollState = rememberScrollState(0)
 
     if (viewModel.showDialog.value) {
         EnableLocationDialog(
@@ -86,7 +87,6 @@ fun WeatherScreen(
         )
     }
 
-    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -101,8 +101,6 @@ fun WeatherScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(enabled = true, state = scrollState)
-
         ) {
 
             Row(
@@ -121,29 +119,28 @@ fun WeatherScreen(
             }
 
             viewModel.currentCondition.value?.let {
-                WeatherInfo(viewModel, Modifier)
+                WeatherInfo(viewModel, scrollState, Modifier)
             } ?: if (viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/ }
         }
     }
 }
 
 @Composable
-fun WeatherInfo(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
+fun WeatherInfo(viewModel: WeatherViewModel, scrollState: ScrollState, modifier: Modifier = Modifier) {
 
     val weather = viewModel.currentCondition.value
     val location = viewModel.geoLocation.value
 
     Column(
-        modifier = Modifier.padding(horizontal = 20.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(top = 36.dp)
+            .verticalScroll(scrollState, enabled = true)
+        ,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 36.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
 
             Text(
                 text = location?.localizedName?.toString() ?: "where ?",
@@ -161,7 +158,7 @@ fun WeatherInfo(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                     )
                 )
             )
-        }
+
 
         Text(
             text = " " + weather?.temperature?.metric?.value?.roundToInt() + "°",
@@ -197,11 +194,10 @@ fun WeatherInfo(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
+fun WeatherDetails(modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(scrollState, enabled = true)
             .then(modifier)
         ,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -269,7 +265,8 @@ fun WeatherDetails(scrollState: ScrollState, modifier: Modifier = Modifier) {
                         .weight(0.8f)
                         .padding(start = 16.dp)
                     ,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
 
                 ) {
                     InfoElement(
@@ -585,8 +582,10 @@ private fun SunnyPreview() {
                     )
                 )
         ) {
-            WeatherDetails(rememberScrollState(0), Modifier.padding(top = 72.dp))
+            val scrollState = rememberScrollState(0)
+//            WeatherDetails(Modifier.padding(top = 72.dp))
 //            Wind()
+            WeatherInfo(FakeWeatherViewModel(), scrollState)
         }
     }
 }

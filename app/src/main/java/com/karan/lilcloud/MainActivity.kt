@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = Color.Transparent.toArgb()
         window.navigationBarColor = Color.Transparent.toArgb()
 
-//        getGeoLocation()
+        getGeoLocation()
 
         setContent {
             LilCloudTheme {
