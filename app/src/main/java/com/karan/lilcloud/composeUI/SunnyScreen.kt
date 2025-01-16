@@ -193,6 +193,8 @@ fun WeatherInfo(viewModel: WeatherViewModel, scrollState: ScrollState, modifier:
 
         WeatherDetails(Modifier.padding(top = 144.dp, start = 16.dp, end = 16.dp))
         Wind(Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
+        Twilight(12, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
+//        TemperatureGraph()
     }
 }
 
@@ -211,7 +213,7 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
             ,
             colors = CardDefaults.cardColors(
-                containerColor = Color(0x08FFFFFF),
+                containerColor = Color(0x12000000),
 
             ),
         ) {
@@ -233,7 +235,7 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.windy),
+                        painter = painterResource(id = R.drawable.wind),
                         contentDescription = "Weather Icon",
                         modifier = Modifier.size(120.dp)
                     )
@@ -354,7 +356,7 @@ fun Wind(modifier : Modifier) {
                 .height(IntrinsicSize.Max)
             ,
             colors = CardDefaults.cardColors(
-                containerColor = Color(0x08FFFFFF),
+                containerColor = Color(0x12000000),
                 ),
 
         ) {

@@ -51,7 +51,7 @@ fun Twilight(
                 .height(180.dp)
             ,
             colors = CardDefaults.cardColors(
-                containerColor = Color(0x12FFFFFF)
+                containerColor = Color(0x12000000)
             )
 
         ) {

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -105,15 +106,26 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         applicationContext.startActivity(intent)
     }
 
-    fun whichBg(icon: String): Int {
-        return if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 18)
-            R.drawable.night_bg else
-            when (icon.dropLast(1)) {
-                "01", "02" -> R.drawable.sunny_bg
-                "03", "04", "50" -> R.drawable.haze_bg
-                "09", "10", "11" -> R.drawable.rainy_bg
-                "13" -> R.drawable.snow_bg
-                else -> 0
-            }
+    fun whichWeatherIcon(n : Int) : Int{
+        when(n) {
+            1,2 -> R.drawable.clear_day
+            3,4,5,6 -> R.drawable.cloudy_day
+            7,8,11 -> R.drawable.fog
+            12, -> R.drawable.rain
+            
+
+        }
     }
+
+//    fun whichBg(icon: String): Int {
+//        return if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 18)
+//            R.drawable.night_bg else
+//            when (icon.dropLast(1)) {
+//                "01", "02" -> R.drawable.sunny_bg
+//                "03", "04", "50" -> R.drawable.haze_bg
+//                "09", "10", "11" -> R.drawable.rainy_bg
+//                "13" -> R.drawable.snow_bg
+//                else -> 0
+//            }
+//    }
 }
