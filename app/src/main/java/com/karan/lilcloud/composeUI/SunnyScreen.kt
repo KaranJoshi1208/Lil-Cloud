@@ -120,13 +120,19 @@ fun WeatherScreen(
 
             viewModel.currentCondition.value?.let {
                 WeatherInfo(viewModel, scrollState, Modifier)
-            } ?: if (viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/ }
+            }
+                ?: if (viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/
+                }
         }
     }
 }
 
 @Composable
-fun WeatherInfo(viewModel: WeatherViewModel, scrollState: ScrollState, modifier: Modifier = Modifier) {
+fun WeatherInfo(
+    viewModel: WeatherViewModel,
+    scrollState: ScrollState,
+    modifier: Modifier = Modifier
+) {
 
     val weather = viewModel.currentCondition.value
     val location = viewModel.geoLocation.value
@@ -136,28 +142,27 @@ fun WeatherInfo(viewModel: WeatherViewModel, scrollState: ScrollState, modifier:
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(top = 36.dp)
-            .verticalScroll(scrollState, enabled = true)
-        ,
+            .verticalScroll(scrollState, enabled = true),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
 
-            Text(
-                text = location?.localizedName?.toString() ?: "where ?",
-                fontSize = 28.sp,
-                textAlign = TextAlign.Center,
-                color = Color.White,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp),
-                style = TextStyle(
-                    shadow = Shadow(
-                        color = Color.Black,
-                        offset = Offset(1f, 1f),
-                        blurRadius = 2.5f
-                    )
+        Text(
+            text = location?.localizedName?.toString() ?: "where ?",
+            fontSize = 28.sp,
+            textAlign = TextAlign.Center,
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color.Black,
+                    offset = Offset(1f, 1f),
+                    blurRadius = 2.5f
                 )
             )
+        )
 
 
         Text(
@@ -191,7 +196,7 @@ fun WeatherInfo(viewModel: WeatherViewModel, scrollState: ScrollState, modifier:
             color = Color.White,
         )
 
-        WeatherDetails(Modifier.padding(top = 144.dp, start = 16.dp, end = 16.dp))
+        WeatherDetails(viewModel, Modifier.padding(top = 144.dp, start = 16.dp, end = 16.dp))
         Wind(Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
         Twilight(12, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
 //        TemperatureGraph()
@@ -199,12 +204,11 @@ fun WeatherInfo(viewModel: WeatherViewModel, scrollState: ScrollState, modifier:
 }
 
 @Composable
-fun WeatherDetails(modifier: Modifier = Modifier) {
+fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .then(modifier)
-        ,
+            .then(modifier),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -214,15 +218,15 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
             ,
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x12000000),
-
-            ),
+                contentColor = Color.Unspecified,
+                ),
         ) {
+            val cc = viewModel.currentCondition.value
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
-                    .padding(12.dp)
                 ,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -230,33 +234,37 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
                 Column(
                     modifier = Modifier
                         .padding(12.dp)
-                        .weight(0.8f)
-                    ,
+                        .weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.wind),
+                        painter = painterResource(id = viewModel.whichWeatherIcon(viewModel.currentCondition.value?.weatherIcon ?: 0)),
                         contentDescription = "Weather Icon",
-                        modifier = Modifier.size(120.dp)
+                        modifier = Modifier
+                            .size(128.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    Row {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val temp = cc?.temperatureSummary?.past6HourRange
                         Text(
-                            text = "23",
-                            fontSize = 32.sp,
+                            text = temp?.maximum?.metric?.value.toString(),
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Red
                         )
                         Text(
                             text = " / ",
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
                         )
                         Text(
-                            text = "17",
-                            fontSize = 32.sp,
+                            text = temp?.minimum?.metric?.value.toString(),
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Blue
                         )
@@ -266,72 +274,69 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .weight(0.8f)
-                        .padding(start = 16.dp)
-                    ,
+                        .weight(1f)
+                        .padding(horizontal = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
 
                 ) {
                     InfoElement(
                         name = "Humidity",
-                        value = "34" + "%"
+                        value = cc?.relativeHumidity.toString() + " %"
                     )
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(0.5.dp)
-                            .background(Color(0x33FFFFFF))
-                        ,
+                            .background(Color(0x33FFFFFF)),
                     )
 
                     InfoElement(
                         name = "Real Feel",
-                        value = "12" + "°C"
+                        value = cc?.realFeelTemperature?.metric?.value.toString() + " °C"
                     )
 
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(0.5.dp)
-                            .background(Color(0x33FFFFFF))
-                        ,
+                            .background(Color(0x33FFFFFF)),
                     )
 
                     InfoElement(
                         name = "UV Index",
-                        value = "2"
+                        value = cc?.uVIndex.toString() + " "
                     )
+
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(0.5.dp)
-                            .background(Color(0x33FFFFFF))
-                        ,
+                            .background(Color(0x33FFFFFF)),
                     )
 
                     InfoElement(
                         name = "Pressure",
-                        value = "1015" + " mbar"
+                        value = cc?.pressure?.metric?.value.toString() + " mbar"
                     )
+
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(0.5.dp)
-                            .background(Color(0x33FFFFFF))
-                        ,
+                            .background(Color(0x33FFFFFF)),
                     )
 
                     InfoElement(
                         name = "Chances of Rain",
-                        value = "4" + "%"
+                        value = "4" + " %"
                     )
+
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(0.5.dp)
-                            .background(Color(0x33FFFFFF))
-                        ,
+                            .background(Color(0x33FFFFFF)),
                     )
                 }
             }
@@ -340,26 +345,24 @@ fun WeatherDetails(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Wind(modifier : Modifier) {
+fun Wind(modifier: Modifier) {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .then(modifier)
-        ,
+            .then(modifier),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(IntrinsicSize.Max)
-            ,
+                .height(IntrinsicSize.Max),
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x12000000),
-                ),
+            ),
 
-        ) {
+            ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -368,10 +371,9 @@ fun Wind(modifier : Modifier) {
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(start = 16.dp, bottom = 12.dp)
-                    ,
+                        .padding(start = 16.dp, bottom = 12.dp),
 
-                ) {
+                    ) {
                     Text(
                         text = "Wind",
 //                        fontWeight = FontWeight.,
@@ -403,8 +405,7 @@ fun Wind(modifier : Modifier) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
-                    ,
+                        .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
 
@@ -455,8 +456,7 @@ fun Wind(modifier : Modifier) {
                             modifier = Modifier
                                 .padding(30.dp)
                                 .fillMaxSize()
-                                .clip(CircleShape)
-                            ,
+                                .clip(CircleShape),
                             contentAlignment = Alignment.TopCenter
                         ) {
                             Spacer(
@@ -464,10 +464,9 @@ fun Wind(modifier : Modifier) {
                                     .padding(8.dp)
                                     .fillMaxHeight(0.7f)
                                     .width(2.dp)
-                                    .background(Color(0xFFFFD700))
-                                ,
+                                    .background(Color(0xFFFFD700)),
 
-                            )
+                                )
                             Box(
                                 modifier = Modifier
                                     .size(8.dp)
@@ -546,12 +545,11 @@ fun Loading() {
 }
 
 @Composable
-fun InfoElement(name : String = "", value : String = "") {
+fun InfoElement(name: String = "", value: String = "") {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
-        ,
+            .padding(top = 8.dp),
         horizontalArrangement = Arrangement.Absolute.SpaceBetween
     ) {
         Text(
@@ -580,7 +578,8 @@ private fun SunnyPreview() {
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color(0xFF152FB2),
-                            Color(0xFF03A9F4))
+                            Color(0xFF03A9F4)
+                        )
                     )
                 )
         ) {
@@ -624,8 +623,18 @@ class FakeWeatherViewModel : WeatherViewModel(Application()) {
                 metric = Pressure.Metric(unit = "mb", unitType = 14, value = 1015.0)
             ),
             realFeelTemperature = RealFeelTemperature(
-                imperial = RealFeelTemperature.Imperial(phrase = "Pleasant", unit = "F", unitType = 18, value = 73.0),
-                metric = RealFeelTemperature.Metric(phrase = "Pleasant", unit = "C", unitType = 17, value = 22.9)
+                imperial = RealFeelTemperature.Imperial(
+                    phrase = "Pleasant",
+                    unit = "F",
+                    unitType = 18,
+                    value = 73.0
+                ),
+                metric = RealFeelTemperature.Metric(
+                    phrase = "Pleasant",
+                    unit = "C",
+                    unitType = 17,
+                    value = 22.9
+                )
             ),
             relativeHumidity = 34,
             temperature = Temperature(
@@ -635,8 +644,16 @@ class FakeWeatherViewModel : WeatherViewModel(Application()) {
             temperatureSummary = TemperatureSummary(
                 past12HourRange = Past12HourRange(
                     maximum = Past12HourRange.Maximum(
-                        imperial = Past12HourRange.Maximum.Imperial(unit = "F", unitType = 18, value = 73.0),
-                        metric = Past12HourRange.Maximum.Metric(unit = "C", unitType = 17, value = 22.9)
+                        imperial = Past12HourRange.Maximum.Imperial(
+                            unit = "F",
+                            unitType = 18,
+                            value = 73.0
+                        ),
+                        metric = Past12HourRange.Maximum.Metric(
+                            unit = "C",
+                            unitType = 17,
+                            value = 22.9
+                        )
                     ),
                     minimum = Minimum(
                         imperial = Minimum.Imperial(unit = "F", unitType = 18, value = 46.0),
@@ -649,18 +666,42 @@ class FakeWeatherViewModel : WeatherViewModel(Application()) {
                         metric = Maximum.Metric(unit = "C", unitType = 17, value = 24.8)
                     ),
                     minimum = Past24HourRange.Minimum(
-                        imperial = Past24HourRange.Minimum.Imperial(unit = "F", unitType = 18, value = 46.0),
-                        metric = Past24HourRange.Minimum.Metric(unit = "C", unitType = 17, value = 8.0)
+                        imperial = Past24HourRange.Minimum.Imperial(
+                            unit = "F",
+                            unitType = 18,
+                            value = 46.0
+                        ),
+                        metric = Past24HourRange.Minimum.Metric(
+                            unit = "C",
+                            unitType = 17,
+                            value = 8.0
+                        )
                     )
                 ),
                 past6HourRange = Past6HourRange(
                     maximum = Past6HourRange.Maximum(
-                        imperial = Past6HourRange.Maximum.Imperial(unit = "F", unitType = 18, value = 73.0),
-                        metric = Past6HourRange.Maximum.Metric(unit = "C", unitType = 17, value = 22.9)
+                        imperial = Past6HourRange.Maximum.Imperial(
+                            unit = "F",
+                            unitType = 18,
+                            value = 73.0
+                        ),
+                        metric = Past6HourRange.Maximum.Metric(
+                            unit = "C",
+                            unitType = 17,
+                            value = 22.9
+                        )
                     ),
                     minimum = Past6HourRange.Minimum(
-                        imperial = Past6HourRange.Minimum.Imperial(unit = "F", unitType = 18, value = 52.0),
-                        metric = Past6HourRange.Minimum.Metric(unit = "C", unitType = 17, value = 11.2)
+                        imperial = Past6HourRange.Minimum.Imperial(
+                            unit = "F",
+                            unitType = 18,
+                            value = 52.0
+                        ),
+                        metric = Past6HourRange.Minimum.Metric(
+                            unit = "C",
+                            unitType = 17,
+                            value = 11.2
+                        )
                     )
                 )
             ),
