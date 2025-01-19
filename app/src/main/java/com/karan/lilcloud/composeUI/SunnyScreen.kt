@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -197,7 +198,7 @@ fun WeatherInfo(
         )
 
         WeatherDetails(viewModel, Modifier.padding(top = 144.dp, start = 16.dp, end = 16.dp))
-        Wind(Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
+        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
         Twilight(12, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
 //        TemperatureGraph()
     }
@@ -252,19 +253,19 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                         val temp = cc?.temperatureSummary?.past6HourRange
                         Text(
                             text = temp?.maximum?.metric?.value.toString(),
-                            fontSize = 24.sp,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Red
                         )
                         Text(
                             text = " / ",
-                            fontSize = 28.sp,
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
                         Text(
                             text = temp?.minimum?.metric?.value.toString(),
-                            fontSize = 24.sp,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Blue
                         )
@@ -345,7 +346,7 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Wind(modifier: Modifier) {
+fun Wind(viewmodel : WeatherViewModel, modifier: Modifier) {
 
     Column(
         modifier = Modifier
@@ -354,6 +355,7 @@ fun Wind(modifier: Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
+        val wind = viewmodel.currentCondition.value?.wind
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -371,34 +373,29 @@ fun Wind(modifier: Modifier) {
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(start = 16.dp, bottom = 12.dp),
+                        .padding(start = 16.dp, bottom = 12.dp)
+                    ,
+                    verticalArrangement = Arrangement.Center
 
                     ) {
-                    Text(
-                        text = "Wind",
-//                        fontWeight = FontWeight.,
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
+
                     InfoElement(
                         name = "Speed",
-                        value = "12.7" + " Km/h"
+                        value =  wind?.speed?.metric?.value.toString() + " Km/h"
                     )
                     InfoElement(
                         name = "Direction",
-                        value = "ESE"
+                        value = wind?.direction?.english.toString()
                     )
 
                     InfoElement(
                         name = "Degrees",
-                        value = "113" + "°"
+                        value = wind?.direction?.degrees.toString() + "°"
                     )
 
                     InfoElement(
                         name = "Gust Speed",
-                        value = "23.7" + " Km/h"
+                        value =  viewmodel.currentCondition.value?.windGust?.speed?.metric?.value.toString() + " Km/h"
                     )
                 }
 
@@ -414,9 +411,9 @@ fun Wind(modifier: Modifier) {
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .padding(12.dp)
-                            .size(130.dp)
+                            .size(132.dp)
                             .clip(shape = CircleShape)
-                            .border(width = 3.dp, color = Color.Black, shape = CircleShape)
+                            .border(width = 1.dp, color = Color.Red, shape = CircleShape)
 
                     ) {
                         // Compass directions
@@ -440,7 +437,7 @@ fun Wind(modifier: Modifier) {
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
                                 .padding(bottom = 4.dp),
-                            color = Color.Black
+                            color = Color.Blue
                         )
                         Text(
                             text = "W",
@@ -456,7 +453,8 @@ fun Wind(modifier: Modifier) {
                             modifier = Modifier
                                 .padding(30.dp)
                                 .fillMaxSize()
-                                .clip(CircleShape),
+                                .rotate((wind?.direction?.degrees)?.toFloat() ?: 0f)
+                            ,
                             contentAlignment = Alignment.TopCenter
                         ) {
                             Spacer(
@@ -464,8 +462,8 @@ fun Wind(modifier: Modifier) {
                                     .padding(8.dp)
                                     .fillMaxHeight(0.7f)
                                     .width(2.dp)
-                                    .background(Color(0xFFFFD700)),
-
+                                    .background(Color(0xFFFFD700))
+                                ,
                                 )
                             Box(
                                 modifier = Modifier
@@ -586,7 +584,7 @@ private fun SunnyPreview() {
             val scrollState = rememberScrollState(0)
 //            WeatherDetails(Modifier.padding(top = 72.dp))
 //            Wind()
-            WeatherInfo(FakeWeatherViewModel(), scrollState)
+//            WeatherInfo(FakeWeatherViewModel(), scrollState)
         }
     }
 }
