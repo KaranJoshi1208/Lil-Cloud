@@ -181,7 +181,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         val time = Calendar.getInstance().let {
             it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE)
         }
-        val progress : Int = ((time - rise)/(set - rise) * 34).absoluteValue
+        val progress : Int = ((time - rise)/(set - rise) * 32).absoluteValue
 
         Log.d("HowsTheWeather", "Inside Regex : $progress")
 
