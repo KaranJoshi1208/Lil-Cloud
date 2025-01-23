@@ -29,4 +29,12 @@ interface ApiTemplate {
         @Query("apikey") apiKey : String,
         @Query("details") details : String = "true"
     ) : CurrentConditionResponse
+
+    @GET("/forecasts/v1/daily/1day/{locationKey}")
+    suspend fun getDailyForecast(
+        @Path("locationKey") locationKey: String,
+        @Query("apikey") apiKey : String,
+        @Query("details") details: String = "true",
+        @Query("metric") metric : String = "true"
+    ) : DailyForecastResponse
 }

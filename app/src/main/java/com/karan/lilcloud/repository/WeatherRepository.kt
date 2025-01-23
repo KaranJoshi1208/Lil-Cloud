@@ -4,6 +4,7 @@ import com.karan.lilcloud.BuildConfig
 import com.karan.lilcloud.model.RetrofitClient
 import com.karan.lilcloud.model.accuWeather.ApiTemplate
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
+import com.karan.lilcloud.model.accuWeather.DailyForecastResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 
 class WeatherRepository () {
@@ -20,6 +21,10 @@ class WeatherRepository () {
 
     suspend fun getLocationInfo(geoPosition : String) : GeoPositionResponse {
         return accuAPI.getLocationInfo(geoPosition, API_KEY_ACCU)
+    }
+
+    suspend fun getDailyForecast(locationKey : String) : DailyForecastResponse {
+        return accuAPI.getDailyForecast(locationKey, API_KEY_ACCU)
     }
 
 }

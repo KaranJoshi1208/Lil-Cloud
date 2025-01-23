@@ -29,18 +29,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.karan.lilcloud.viewModel.WeatherViewModel
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
 fun Twilight(
-    progress : Int = 10,
+    viewModel: WeatherViewModel,
     modifier : Modifier,
 ) {
-
+    val data = viewModel.getTwilight()
+    val progress = data.first
     Column(
         modifier = Modifier
             .then(modifier)
@@ -68,7 +71,7 @@ fun Twilight(
                         .fillMaxSize()
                 ) {
 
-                    offset = Offset(55.dp.toPx(), 25.dp.toPx())
+                    offset = Offset(70.dp.toPx(), 25.dp.toPx())
                     var start = -170f
                     var arcColor = Color.Yellow
 
@@ -99,8 +102,8 @@ fun Twilight(
                         imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
                         contentDescription = "Sun",
                         modifier = Modifier
-                            .size(50.dp)
-                            .offset((155 + 125 * cos(radian)).dp, (125 - 125 * sin(radian)).dp)
+                            .size(20.dp)
+                            .offset((182.5 + 125 * cos(radian)).dp, (140 - 125 * sin(radian)).dp)
                         ,
                     )
 
@@ -123,8 +126,8 @@ fun Twilight(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
                         ) {
-                            Text(text = "5:30", color = Color.White.copy(alpha = 0.4f))
-                            Text(text = "6:20", color = Color.White.copy(alpha = 0.4f))
+                            Text(text = "${data.second.first} \nSunrise", color = Color.White.copy(alpha = 0.4f), textAlign = TextAlign.Center)
+                            Text(text = "${data.second.second} \nSunset", color = Color.White.copy(alpha = 0.4f), textAlign = TextAlign.Center)
                         }
                     }
                 }
@@ -149,6 +152,6 @@ fun TwilightPreview() {
                 )
             )
     ) {
-        Twilight(16, Modifier)
+//        Twilight(18, Modifier)
     }
 }
