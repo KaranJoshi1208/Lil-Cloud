@@ -200,7 +200,7 @@ fun WeatherInfo(
         WeatherDetails(viewModel, Modifier.padding(top = 144.dp, start = 16.dp, end = 16.dp))
 //        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
         Twilight(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
-//        TemperatureGraph()
+        TemperatureGraph(viewModel, modifier = Modifier.padding(bottom = 32.dp, top = 16.dp))
     }
 }
 

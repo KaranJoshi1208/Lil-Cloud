@@ -7,7 +7,9 @@ import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -18,8 +20,12 @@ import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
 import com.karan.lilcloud.model.accuWeather.DailyForecastResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
+import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
 import com.karan.lilcloud.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.Cache
 import java.io.File
@@ -42,16 +48,23 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
     var currentCondition = mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
     var dailyForecast = mutableStateOf<DailyForecastResponse?>(null)
+    var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem>()
 
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
         val cacheFile1 = File(applicationContext.cacheDir, "current_condition.json")
         val cacheFile2 = File(applicationContext.cacheDir, "daily_forecast.json")
-        if(cacheFile1.exists() && cacheFile2.exists()) {
+        val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
+        if(cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists()) {
             val json1 = cacheFile1.readText()
             currentCondition.value = Gson().fromJson(json1, CurrentConditionResponse.CurrentConditionResponseItem::class.java)
             val json2 = cacheFile2.readText()
             dailyForecast.value = Gson().fromJson(json2, DailyForecastResponse::class.java)
+            val json3 = cacheFile3.readText()
+            halfDayForecast.apply {
+                clear()
+                addAll(Gson().fromJson(json3, HalfDayForecastResponse::class.java))
+            }
             Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
             Log.d("HowsTheWeather", currentCondition.value.toString())
             Log.d("HowsTheWeather", dailyForecast.value.toString())
@@ -63,9 +76,14 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         viewModelScope.launch(dispatcher) {
             try {
                 getLocationInfo("$lat,$lon")
-                geoLocation.value?.key?.also {
-                    getCurrentCondition(it)
-                    getDailyForecast(it)
+                geoLocation.value?.key?.also { key ->
+                    coroutineScope {
+                        listOf(
+                            async { getCurrentCondition(key) },
+                            async { getDailyForecast(key) },
+                            async { getHalfDayForecast(key) }
+                        ).awaitAll()
+                    }
                 } ?: Log.d("HowsTheWeather", "Location Response is NULL")
 
             } catch (e: Exception) {
@@ -116,6 +134,27 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         } catch (e : Exception) {
             Log.e("HowsTheWeather", "Error fetching DailyForecast", e)
         }
+    }
+
+
+    suspend fun getHalfDayForecast(locationKey: String) {
+        try{
+            halfDayForecast.addAll(repo.getHalfDayForecast(locationKey))
+
+            // caching
+            val json = Gson().toJson(halfDayForecast)
+            val cacheFile = File(applicationContext.cacheDir, "half_day.json")
+            cacheFile.writeText(json)
+
+            Log.d("HowsTheWeather", "Completed ✔️")
+        } catch (e : Exception) {
+            Log.e("HowsTheWeather", "Error fetching Half Day Forecast", e)
+        }
+    }
+
+
+    fun regex(str : String, reg : Regex) : String {
+        return reg.find(str)?.groupValues?.get(1).toString()
     }
 
 
@@ -181,10 +220,12 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         val time = Calendar.getInstance().let {
             it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE)
         }
-        val progress : Int = ((time - rise)/(set - rise) * 34).absoluteValue
+        val progress : Int = ((time - rise)/(set - rise) * 32).absoluteValue
 
-        Log.d("HowsTheWeather", "Inside Regex : $progress")
+        Log.d("HowsTheWeather", "Inside Regex Progress : $progress")
 
         return Pair(progress, Pair(sunrise, sunset))
     }
+
+
 }

@@ -22,29 +22,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.karan.lilcloud.viewModel.WeatherViewModel
 
 @Composable
 fun TemperatureGraph(
-    temperatures: List<Float>,
-    hours: List<String>,
+    viewModel: WeatherViewModel,
+//    temperatures: List<Float>,
+//    hours: List<String>,
     modifier: Modifier = Modifier,
-    lineColor: Color = Color.Black,
-    pointColor: Color = MaterialTheme.colorScheme.secondary
+    lineColor: Color = Color.Green,
 ) {
-    val maxTemp = temperatures.maxOrNull() ?: 1f
-    val minTemp = temperatures.minOrNull() ?: 0f
 
+    val temperatures = viewModel.halfDayForecast
+    val (maxTemp, minTemp) = temperatures.fold(Double.MIN_VALUE to Double.MAX_VALUE) { acc, item ->
+        val temp = item.temperature?.value ?: 0.0
+//        Pair<Double, Double>(maxOf(acc.first, temp) , minOf(acc.second, temp))   ...and here it is , MAGIC !!!
+        maxOf(acc.first, temp) to minOf(acc.second, temp)
+
+    }
+
+    val reg = Regex("""T(\d{2})""")
 
     val scrollState = rememberScrollState()
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
-            .padding(top = 72.dp)
+//            .height(In)
+            .then(modifier)
         ,
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x12FFFFFF)
+            containerColor = Color(0x12000000)
         )
 
     ) {
@@ -66,7 +74,7 @@ fun TemperatureGraph(
                 ) {
                     // Render the temperature graph point
                     Text(
-                        text = "${temp.toInt()}°",
+                        text = "${temp.temperature?.value?.toInt()}°",
                         fontSize = 20.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Thin
@@ -74,8 +82,8 @@ fun TemperatureGraph(
 
                     Box(
                         modifier = Modifier
-                            .fillMaxHeight(0.5f)
-                            .padding(top = 16.dp)
+                            .height(108.dp)
+                            .padding(vertical = 20.dp)
                     ) {
 
                         Canvas(
@@ -85,7 +93,7 @@ fun TemperatureGraph(
                             val yScale = graphHeight / (maxTemp - minTemp)
 
                             // Calculate Y position for the temperature
-                            val y = graphHeight - ((temp - minTemp) * yScale)
+                            val y = graphHeight - (((temp.temperature?.value ?: 0.0) - minTemp) * yScale).toFloat()
 
                             // Draw the point
 
@@ -93,7 +101,7 @@ fun TemperatureGraph(
                             // Draw the connecting line (if not the first point)
                             if (index > 0) {
                                 val prevY =
-                                    graphHeight - ((temperatures[index - 1] - minTemp) * yScale)
+                                    (graphHeight - (((temperatures[index - 1].temperature?.value ?: 0.0) - minTemp) * yScale)).toFloat()
                                 drawLine(
                                     color = lineColor,
                                     strokeWidth = 1.dp.toPx(),
@@ -125,15 +133,24 @@ fun TemperatureGraph(
                     }
 
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.cloudy_day),
+                        imageVector = ImageVector.vectorResource(id = viewModel.whichWeatherIcon(temp.weatherIcon ?: 0)),
                         contentDescription = "Weather Icon",
                         modifier = Modifier
-                            .size(60.dp),
+                            .size(24.dp),
                     )
 
                     Text(
-                        text = hours.getOrNull(index) ?: "${index + 1}:00",
+                        text = viewModel.regex(temp.dateTime ?: "", reg).let {
+                            val time = it.toInt() + 1
+                            if(time >= 12) {
+                                "${(if(time%12 == 0) 12 else time%12 )} pm"
+                            }else {
+                                "$time am"
+                            }
+                        },
                         color = Color(0x50FFFFFF),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
                     )
                 }
             }
@@ -161,12 +178,12 @@ fun TemperatureScreen() {
                 )
             )
     ) {
-        TemperatureGraph(
-            temperatures = temperatures,
-            hours = hours,
-            modifier = Modifier.fillMaxWidth(),
-            lineColor = Color.Green,
-            pointColor = Color.Red
-        )
+//        TemperatureGraph(
+//            temperatures = temperatures,
+//            hours = hours,
+//            modifier = Modifier.fillMaxWidth(),
+//            lineColor = Color.Green,
+//            pointColor = Color.Red
+//        )
     }
 }

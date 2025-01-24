@@ -37,4 +37,12 @@ interface ApiTemplate {
         @Query("details") details: String = "true",
         @Query("metric") metric : String = "true"
     ) : DailyForecastResponse
+
+
+    @GET("/forecasts/v1/hourly/12hour/{locationKey}")
+    suspend fun getHalfDayForecast(
+        @Path("locationKey") locationKey: String,
+        @Query("apikey") apiKey : String,
+        @Query("metric") metric : String = "true"
+    ) : HalfDayForecastResponse
 }
