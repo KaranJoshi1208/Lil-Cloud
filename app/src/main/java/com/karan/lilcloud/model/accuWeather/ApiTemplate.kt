@@ -45,4 +45,11 @@ interface ApiTemplate {
         @Query("apikey") apiKey : String,
         @Query("metric") metric : String = "true"
     ) : HalfDayForecastResponse
+
+    @GET("/forecasts/v1/daily/5day/{locationKey}")
+    suspend fun getQuinForecast (
+        @Path("locationKey") locationKey: String,
+        @Query("apikey") apiKey : String,
+        @Query("metric") metric : String = "true"
+    ) : QuinForecastResponse
 }

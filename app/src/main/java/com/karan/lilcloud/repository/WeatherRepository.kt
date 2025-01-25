@@ -7,6 +7,7 @@ import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
 import com.karan.lilcloud.model.accuWeather.DailyForecastResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
+import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
 
 class WeatherRepository () {
 
@@ -28,8 +29,11 @@ class WeatherRepository () {
         return accuAPI.getDailyForecast(locationKey, API_KEY_ACCU)
     }
 
-
     suspend fun getHalfDayForecast(locationKey : String) : HalfDayForecastResponse {
         return accuAPI.getHalfDayForecast(locationKey, API_KEY_ACCU)
+    }
+
+    suspend fun getQuinForecast(locationKey: String) : QuinForecastResponse {
+        return accuAPI.getQuinForecast(locationKey, API_KEY_ACCU)
     }
 }

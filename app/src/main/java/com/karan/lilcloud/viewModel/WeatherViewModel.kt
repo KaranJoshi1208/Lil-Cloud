@@ -21,6 +21,7 @@ import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
 import com.karan.lilcloud.model.accuWeather.DailyForecastResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
+import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
 import com.karan.lilcloud.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -39,6 +40,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
     private val applicationContext = application.applicationContext
     val pM: PermissionManager = PermissionManager(applicationContext)
     val locationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
+    val gson = Gson()
 
     // Control variables
     var showDialog = mutableStateOf<Boolean>(false)
@@ -49,22 +51,27 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
     var currentCondition = mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
     var dailyForecast = mutableStateOf<DailyForecastResponse?>(null)
     var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem>()
+    var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
         val cacheFile1 = File(applicationContext.cacheDir, "current_condition.json")
         val cacheFile2 = File(applicationContext.cacheDir, "daily_forecast.json")
         val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
+        val cacheFile4 = File(applicationContext.cacheDir, "quin_forecast.json")
+        if(cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists() && cacheFile4.exists()) {
         if(cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists()) {
             val json1 = cacheFile1.readText()
-            currentCondition.value = Gson().fromJson(json1, CurrentConditionResponse.CurrentConditionResponseItem::class.java)
+            currentCondition.value = gson.fromJson(json1, CurrentConditionResponse.CurrentConditionResponseItem::class.java)
             val json2 = cacheFile2.readText()
-            dailyForecast.value = Gson().fromJson(json2, DailyForecastResponse::class.java)
+            dailyForecast.value = gson.fromJson(json2, DailyForecastResponse::class.java)
             val json3 = cacheFile3.readText()
             halfDayForecast.apply {
                 clear()
-                addAll(Gson().fromJson(json3, HalfDayForecastResponse::class.java))
+                addAll(gson.fromJson(json3, HalfDayForecastResponse::class.java))
             }
+            val json4 = cacheFile4.readText()
+            quinForecastResponse.value = gson.fromJson(json4, QuinForecastResponse::class.java)
             Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
             Log.d("HowsTheWeather", currentCondition.value.toString())
             Log.d("HowsTheWeather", dailyForecast.value.toString())
@@ -81,7 +88,8 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
                         listOf(
                             async { getCurrentCondition(key) },
                             async { getDailyForecast(key) },
-                            async { getHalfDayForecast(key) }
+                            async { getHalfDayForecast(key) },
+                            async { getQuinForecast(key) }
                         ).awaitAll()
                     }
                 } ?: Log.d("HowsTheWeather", "Location Response is NULL")
@@ -95,6 +103,8 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         }
     }
 
+
+    // API Calls
     suspend fun getLocationInfo(geoPosition: String) {
         try {
             val response = repo.getLocationInfo(geoPosition)
@@ -111,7 +121,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
             currentCondition.value = response[0]
 
             // caching
-            val json = Gson().toJson(currentCondition.value)
+            val json = gson.toJson(currentCondition.value)
             val cacheFile = File(applicationContext.cacheDir, "current_condition.json")
             cacheFile.writeText(json)
 
@@ -126,7 +136,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
             dailyForecast.value = repo.getDailyForecast(locationKey)
 
             //caching
-            val json = Gson().toJson(dailyForecast.value)
+            val json = gson.toJson(dailyForecast.value)
             val cacheFile = File(applicationContext.cacheDir, "daily_forecast.json")
             cacheFile.writeText(json)
 
@@ -142,7 +152,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
             halfDayForecast.addAll(repo.getHalfDayForecast(locationKey))
 
             // caching
-            val json = Gson().toJson(halfDayForecast)
+            val json = gson.toJson(halfDayForecast)
             val cacheFile = File(applicationContext.cacheDir, "half_day.json")
             cacheFile.writeText(json)
 
@@ -152,6 +162,21 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         }
     }
 
+    suspend fun getQuinForecast(locationKey: String) {
+        try {
+            quinForecastResponse.value = repo.getQuinForecast(locationKey)
+
+            // caching
+            val json = gson.toJson(quinForecastResponse.value)
+            val cacheFile = File(applicationContext.cacheDir, "quin_forecast.json")
+            cacheFile.writeText(json)
+        } catch (e : Exception) {
+            Log.e("HowsTheWeather", "Error Fetching 5-days Forecast", e)
+        }
+    }
+
+
+    // Utility functions
 
     fun regex(str : String, reg : Regex) : String {
         return reg.find(str)?.groupValues?.get(1).toString()
@@ -189,6 +214,8 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
             else -> R.drawable.lil_cloud
         }
     }
+
+    // Data Providers
 
     fun getTwilight() : Pair<Int, Pair<String, String>> {
 
