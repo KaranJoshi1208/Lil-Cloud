@@ -60,6 +60,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
         val cacheFile4 = File(applicationContext.cacheDir, "quin_forecast.json")
         if(cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists() && cacheFile4.exists()) {
+        if(cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists()) {
             val json1 = cacheFile1.readText()
             currentCondition.value = gson.fromJson(json1, CurrentConditionResponse.CurrentConditionResponseItem::class.java)
             val json2 = cacheFile2.readText()
@@ -176,7 +177,6 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
 
 
     // Utility functions
-
 
     fun regex(str : String, reg : Regex) : String {
         return reg.find(str)?.groupValues?.get(1).toString()
