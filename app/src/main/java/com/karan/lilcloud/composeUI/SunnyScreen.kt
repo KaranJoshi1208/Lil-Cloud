@@ -77,7 +77,7 @@ import kotlin.math.roundToInt
 @Composable
 fun WeatherScreen(
     viewModel: WeatherViewModel,
-    modifier: Modifier = Modifier /* getBg : () -> Int */
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState(0)
 
@@ -197,11 +197,11 @@ fun WeatherInfo(
             color = Color.White,
         )
 
-        WeatherDetails(viewModel, Modifier.padding(top = 144.dp, start = 16.dp, end = 16.dp))
+        WeatherDetails(viewModel, Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp))
 //        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
-        Twilight(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
-        TemperatureGraph(viewModel, modifier = Modifier.padding(bottom = 32.dp, top = 16.dp))
+        TemperatureGraph(viewModel, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
         QuinForecast(viewModel, Modifier.padding(16.dp))
+        Twilight(viewModel, Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp))
     }
 }
 
