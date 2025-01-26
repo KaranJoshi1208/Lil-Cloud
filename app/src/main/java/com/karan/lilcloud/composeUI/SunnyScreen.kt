@@ -201,6 +201,7 @@ fun WeatherInfo(
 //        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
         Twilight(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
         TemperatureGraph(viewModel, modifier = Modifier.padding(bottom = 32.dp, top = 16.dp))
+        QuinForecast(viewModel, Modifier.padding(16.dp))
     }
 }
 

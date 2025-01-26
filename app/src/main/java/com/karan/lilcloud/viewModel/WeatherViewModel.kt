@@ -1,15 +1,14 @@
 package com.karan.lilcloud.viewModel
 
+import java.time.format.TextStyle
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -28,9 +27,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import okhttp3.Cache
 import java.io.File
+import java.time.LocalDate
 import java.util.Calendar
+import java.util.Locale
 import kotlin.math.absoluteValue
 
 open class WeatherViewModel( application: Application) : AndroidViewModel(application) {
@@ -50,7 +50,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
     var currentCondition = mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
     var dailyForecast = mutableStateOf<DailyForecastResponse?>(null)
-    var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem>()
+    var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem?>()
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
@@ -66,7 +66,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
             val json2 = cacheFile2.readText()
             dailyForecast.value = gson.fromJson(json2, DailyForecastResponse::class.java)
             val json3 = cacheFile3.readText()
-            halfDayForecast.apply {
+            halfDayForecast?.apply {
                 clear()
                 addAll(gson.fromJson(json3, HalfDayForecastResponse::class.java))
             }
@@ -149,7 +149,7 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
 
     suspend fun getHalfDayForecast(locationKey: String) {
         try{
-            halfDayForecast.addAll(repo.getHalfDayForecast(locationKey))
+            halfDayForecast?.addAll(repo.getHalfDayForecast(locationKey))
 
             // caching
             val json = gson.toJson(halfDayForecast)
@@ -252,6 +252,16 @@ open class WeatherViewModel( application: Application) : AndroidViewModel(applic
         Log.d("HowsTheWeather", "Inside Regex Progress : $progress")
 
         return Pair(progress, Pair(sunrise, sunset))
+    }
+
+
+    fun getDayName(n : Long) : String {
+        val day = LocalDate.now().plusDays(n)
+        return when(n) {
+            0L -> "Today"
+            1L -> "Tomorrow"
+            else -> day.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+        }
     }
 
 
