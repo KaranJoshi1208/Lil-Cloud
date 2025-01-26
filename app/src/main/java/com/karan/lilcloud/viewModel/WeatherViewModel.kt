@@ -61,6 +61,7 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
         val cacheFile2 = File(applicationContext.cacheDir, "daily_forecast.json")
         val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
         val cacheFile4 = File(applicationContext.cacheDir, "quin_forecast.json")
+        
         if (cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists() && cacheFile4.exists()) {
             val json1 = cacheFile1.readText()
             currentCondition.value = gson.fromJson(
@@ -157,7 +158,7 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             halfDayForecast?.addAll(repo.getHalfDayForecast(locationKey))
 
             // caching
-            val json = gson.toJson(halfDayForecast)
+            val json = Gson().toJson(halfDayForecast)
             val cacheFile = File(applicationContext.cacheDir, "half_day.json")
             cacheFile.writeText(json)
 
@@ -172,7 +173,7 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             quinForecastResponse.value = repo.getQuinForecast(locationKey)
 
             // caching
-            val json = gson.toJson(quinForecastResponse.value)
+            val json = Gson().toJson(quinForecastResponse.value)
             val cacheFile = File(applicationContext.cacheDir, "quin_forecast.json")
             cacheFile.writeText(json)
         } catch (e: Exception) {
