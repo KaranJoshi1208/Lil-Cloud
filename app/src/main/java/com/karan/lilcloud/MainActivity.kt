@@ -1,41 +1,20 @@
 package com.karan.lilcloud
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
-import com.android.volley.Request
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.karan.lilcloud.composeUI.EnableLocationDialog
-import com.karan.lilcloud.composeUI.FakeWeatherViewModel
-import com.karan.lilcloud.composeUI.Loading
-import com.karan.lilcloud.composeUI.Twilight
 import com.karan.lilcloud.composeUI.WeatherScreen
-import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
 
@@ -57,7 +36,6 @@ class MainActivity : ComponentActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {

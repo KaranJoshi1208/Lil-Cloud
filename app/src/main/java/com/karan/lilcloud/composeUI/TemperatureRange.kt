@@ -36,7 +36,7 @@ fun TemperatureGraph(
 
     val (maxTemp, minTemp) = temperatures.fold(Double.MIN_VALUE to Double.MAX_VALUE) { acc, item ->
         val temp = item?.temperature?.value ?: 0.0
-//        Pair<Double, Double>(maxOf(acc.first, temp) , minOf(acc.second, temp))   ...and here it is , MAGIC !!!
+//        Pair<Double, Double>(maxOf(acc.first, temp) , minOf(acc.second, temp))   ...and here it is, MAGIC !!!
         maxOf(acc.first, temp) to minOf(acc.second, temp)
 
     }
