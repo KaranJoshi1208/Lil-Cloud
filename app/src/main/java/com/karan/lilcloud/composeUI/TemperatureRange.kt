@@ -30,9 +30,9 @@ fun TemperatureGraph(
 
     lateinit var temperatures : SnapshotStateList<HalfDayForecastResponse.HalfDayForecastResponseItem?>
 
-    viewModel.halfDayForecast?.let {
+    viewModel.halfDayForecast.let {
         temperatures = it
-    } ?: return
+    }
 
     val (maxTemp, minTemp) = temperatures.fold(Double.MIN_VALUE to Double.MAX_VALUE) { acc, item ->
         val temp = item?.temperature?.value ?: 0.0
