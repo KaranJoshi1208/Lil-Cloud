@@ -42,7 +42,12 @@ fun Twilight(
     viewModel: WeatherViewModel,
     modifier : Modifier,
 ) {
-    val data = viewModel.getTwilight()
+    lateinit var data : Pair<Int, Pair<String, String>>
+
+    viewModel.dailyForecast.value?.let {
+        data = viewModel.getTwilight()
+    } ?: return
+
     val progress = data.first
     Column(
         modifier = Modifier

@@ -57,33 +57,36 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
 
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
+
+        val dispatcher = Dispatchers.IO
+
         val cacheFile1 = File(applicationContext.cacheDir, "current_condition.json")
         val cacheFile2 = File(applicationContext.cacheDir, "daily_forecast.json")
         val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
         val cacheFile4 = File(applicationContext.cacheDir, "quin_forecast.json")
         if (cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists() && cacheFile4.exists()) {
-            val json1 = cacheFile1.readText()
-            currentCondition.value = gson.fromJson(
-                json1,
-                CurrentConditionResponse.CurrentConditionResponseItem::class.java
-            )
-            val json2 = cacheFile2.readText()
-            dailyForecast.value = gson.fromJson(json2, DailyForecastResponse::class.java)
-            val json3 = cacheFile3.readText()
-            halfDayForecast.apply {
-                clear()
-                addAll(gson.fromJson(json3, HalfDayForecastResponse::class.java))
-            }
-            val json4 = cacheFile4.readText()
-            quinForecastResponse.value = gson.fromJson(json4, QuinForecastResponse::class.java)
+            viewModelScope.launch(dispatcher) {
+                val json1 = cacheFile1.readText()
+                currentCondition.value = gson.fromJson(
+                    json1,
+                    CurrentConditionResponse.CurrentConditionResponseItem::class.java
+                )
+                val json2 = cacheFile2.readText()
+                dailyForecast.value = gson.fromJson(json2, DailyForecastResponse::class.java)
+                val json3 = cacheFile3.readText()
+                halfDayForecast.apply {
+                    clear()
+                    addAll(gson.fromJson(json3, HalfDayForecastResponse::class.java))
+                }
+                val json4 = cacheFile4.readText()
+                quinForecastResponse.value = gson.fromJson(json4, QuinForecastResponse::class.java)
 
-            Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
-            Log.d("HowsTheWeather", currentCondition.value.toString())
-            Log.d("HowsTheWeather", dailyForecast.value.toString())
+                Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
+                Log.d("HowsTheWeather", currentCondition.value.toString())
+                Log.d("HowsTheWeather", dailyForecast.value.toString())
+            }
             return
         }
-
-        val dispatcher = Dispatchers.IO
 
         viewModelScope.launch(dispatcher) {
             try {
