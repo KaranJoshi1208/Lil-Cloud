@@ -56,6 +56,11 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
+//    var screens =
+
+
+
+
     fun loadCurrentWeather(lat: Double, lon: Double) {
 
         val dispatcher = Dispatchers.IO

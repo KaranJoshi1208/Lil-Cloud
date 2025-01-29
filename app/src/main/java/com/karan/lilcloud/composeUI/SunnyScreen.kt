@@ -44,6 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.karan.lilcloud.navigation.Screens
 import com.karan.lilcloud.viewModel.WeatherViewModel
 import kotlin.math.roundToInt
 
@@ -51,6 +53,7 @@ import kotlin.math.roundToInt
 @Composable
 fun WeatherScreen(
     viewModel: WeatherViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState(0)
@@ -89,7 +92,11 @@ fun WeatherScreen(
                     contentDescription = "Menu",
                     modifier = Modifier
                         .padding(start = 20.dp)
-                        .size(32.dp),
+                        .size(32.dp)
+                        .clickable(true) {
+                            navController.navigate(route = Screens.ManageLocations.name)
+                        }
+                    ,
                 )
             }
 

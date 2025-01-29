@@ -93,5 +93,8 @@ dependencies {
 
     //WeatherView
     implementation("androidx.activity:activity-ktx:1.9.3")
-    
+
+    // Jetpack Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.5")
+
 }
