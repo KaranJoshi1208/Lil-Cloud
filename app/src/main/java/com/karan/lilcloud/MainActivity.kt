@@ -13,14 +13,19 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.Priority
 import com.karan.lilcloud.composeUI.WeatherScreen
+import com.karan.lilcloud.navigation.NavGraph
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel : WeatherViewModel
+    private lateinit var navController: NavHostController
 
     /**
      *object(Type : ActivityResultLauncher<String>) for requesting any kind of Permission
@@ -54,7 +59,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LilCloudTheme {
-                WeatherScreen(viewModel)
+                navController = rememberNavController()
+                NavGraph(viewModel, navController)
+//                WeatherScreen(viewModel)
+
             }
         }
     }
