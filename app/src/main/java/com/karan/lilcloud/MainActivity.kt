@@ -62,7 +62,6 @@ class MainActivity : ComponentActivity() {
                 navController = rememberNavController()
                 NavGraph(viewModel, navController)
 //                WeatherScreen(viewModel)
-
             }
         }
     }

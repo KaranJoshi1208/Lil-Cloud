@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.karan.lilcloud.R
 import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse
@@ -35,6 +36,12 @@ import kotlin.math.absoluteValue
 
 open class WeatherViewModel(application: Application) : AndroidViewModel(application) {
 
+    // Keys
+    companion object {
+        private const val PREF_FILE = "lil_prefs"
+        private const val LOCATIONS_LIST_KEY = "location_list"
+    }
+
     // Helper variables
     private val repo: WeatherRepository = WeatherRepository()
     private val applicationContext = application.applicationContext
@@ -47,6 +54,8 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     var showDialog = mutableStateOf<Boolean>(false)
     var showLoading = mutableStateOf<Boolean>(false)
 
+    val screens : MutableList<String> = getPrefLocations()
+
     // API responses
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
     var currentCondition =
@@ -54,11 +63,6 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     var dailyForecast = mutableStateOf<DailyForecastResponse?>(null)
     var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem?>()
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
-
-
-//    var screens =
-
-
 
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
@@ -97,6 +101,7 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             try {
                 getLocationInfo("$lat,$lon")
                 geoLocation.value?.key?.also { key ->
+//                    screens.add(0, key)
                     coroutineScope {
                         listOf(
                             async { getCurrentCondition(key) },
@@ -162,7 +167,7 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
 
     suspend fun getHalfDayForecast(locationKey: String) {
         try {
-            halfDayForecast?.addAll(repo.getHalfDayForecast(locationKey))
+            halfDayForecast.addAll(repo.getHalfDayForecast(locationKey))
 
             // caching
             val json = gson.toJson(halfDayForecast)
@@ -191,10 +196,21 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
 
     // Utility functions
 
+    fun setPrefLocations(locations : MutableList<String>) {
+        val json = gson.toJson(locations)
+        val pref = applicationContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+        pref.edit().putString(LOCATIONS_LIST_KEY, json).apply()
+    }
+
+    fun getPrefLocations() : MutableList<String> {
+        val pref = applicationContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+        val json = pref.getString(LOCATIONS_LIST_KEY, null) ?: return mutableListOf<String>()
+        return gson.fromJson(json, object : TypeToken<MutableList<String>>() {}.type)
+    }
+
     fun regex(str: String, reg: Regex): String {
         return reg.find(str)?.groupValues?.get(1).toString()
     }
-
 
     fun isLocationEnabled(): Boolean {
         val locationManager =
