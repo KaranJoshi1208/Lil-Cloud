@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -22,6 +23,8 @@ import com.karan.lilcloud.model.accuWeather.DailyForecastResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
 import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
+import com.karan.lilcloud.model.room.WeatherData
+import com.karan.lilcloud.model.room.WeatherDataBase
 import com.karan.lilcloud.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -42,13 +45,26 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
         private const val LOCATIONS_LIST_KEY = "location_list"
     }
 
+    val dispatcher = Dispatchers.IO
+
+
     // Helper variables
-    private val repo: WeatherRepository = WeatherRepository()
+    private val db = WeatherDataBase.getWeatherDataBase(application)
+    private val repo: WeatherRepository = WeatherRepository(db)
     private val applicationContext = application.applicationContext
     val pM: PermissionManager = PermissionManager(applicationContext)
     val locationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(applicationContext)
     val gson = Gson()
+
+    lateinit var data : List<WeatherData>
+
+    init {
+        viewModelScope.launch(dispatcher) {
+            data = repo.getAllWeatherData()
+            Log.d("HowsTheWeather", "database of size : ${data.size}")
+        }
+    }
 
     // Control variables
     var showDialog = mutableStateOf<Boolean>(false)
@@ -67,34 +83,41 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
 
     fun loadCurrentWeather(lat: Double, lon: Double) {
 
-        val dispatcher = Dispatchers.IO
 
-        val cacheFile1 = File(applicationContext.cacheDir, "current_condition.json")
-        val cacheFile2 = File(applicationContext.cacheDir, "daily_forecast.json")
-        val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
-        val cacheFile4 = File(applicationContext.cacheDir, "quin_forecast.json")
-        if (cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists() && cacheFile4.exists()) {
-            viewModelScope.launch(dispatcher) {
-                val json1 = cacheFile1.readText()
-                currentCondition.value = gson.fromJson(
-                    json1,
-                    CurrentConditionResponse.CurrentConditionResponseItem::class.java
-                )
-                val json2 = cacheFile2.readText()
-                dailyForecast.value = gson.fromJson(json2, DailyForecastResponse::class.java)
-                val json3 = cacheFile3.readText()
-                halfDayForecast.apply {
-                    clear()
-                    addAll(gson.fromJson(json3, HalfDayForecastResponse::class.java))
-                }
-                val json4 = cacheFile4.readText()
-                quinForecastResponse.value = gson.fromJson(json4, QuinForecastResponse::class.java)
 
-                Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
-                Log.d("HowsTheWeather", currentCondition.value.toString())
-                Log.d("HowsTheWeather", dailyForecast.value.toString())
-            }
-            return
+
+//        val cacheFile1 = File(applicationContext.cacheDir, "current_condition.json")
+//        val cacheFile2 = File(applicationContext.cacheDir, "daily_forecast.json")
+//        val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
+//        val cacheFile4 = File(applicationContext.cacheDir, "quin_forecast.json")
+//        if (cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists() && cacheFile4.exists()) {
+//            viewModelScope.launch(dispatcher) {
+//                val json1 = cacheFile1.readText()
+//                currentCondition.value = gson.fromJson(
+//                    json1,
+//                    CurrentConditionResponse.CurrentConditionResponseItem::class.java
+//                )
+//                val json2 = cacheFile2.readText()
+//                dailyForecast.value = gson.fromJson(json2, DailyForecastResponse::class.java)
+//                val json3 = cacheFile3.readText()
+//                halfDayForecast.apply {
+//                    clear()
+//                    addAll(gson.fromJson(json3, HalfDayForecastResponse::class.java))
+//                }
+//                val json4 = cacheFile4.readText()
+//                quinForecastResponse.value = gson.fromJson(json4, QuinForecastResponse::class.java)
+//
+//                Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
+//                Log.d("HowsTheWeather", currentCondition.value.toString())
+//                Log.d("HowsTheWeather", dailyForecast.value.toString())
+//            }
+//            return
+//        }
+
+        if(data.isEmpty()) {
+
+
+
         }
 
         viewModelScope.launch(dispatcher) {
