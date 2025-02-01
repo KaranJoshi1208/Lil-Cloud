@@ -43,13 +43,13 @@ class WeatherDataConverters {
     }
 
     @TypeConverter
-    fun storeHalfDayForecast(value: List<HalfDayForecastResponse.HalfDayForecastResponseItem?>): String {
+    fun storeHalfDayForecast(value: HalfDayForecastResponse): String {
         return gson.toJson(value)
     }
 
     @TypeConverter
-    fun getHalfDayForecast(value: String): List<HalfDayForecastResponse.HalfDayForecastResponseItem?> {
-        return gson.fromJson(value, object : TypeToken<List<HalfDayForecastResponse.HalfDayForecastResponseItem?>>() {}.type)
+    fun getHalfDayForecast(value: String): HalfDayForecastResponse {
+        return gson.fromJson(value, object : TypeToken<HalfDayForecastResponse>() {}.type)
     }
 
     @TypeConverter

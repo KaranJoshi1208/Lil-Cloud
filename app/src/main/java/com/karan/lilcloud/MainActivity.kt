@@ -34,7 +34,9 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 Toast.makeText(this@MainActivity, "Location Permission Granted 👍💦", Toast.LENGTH_SHORT).show()
+                viewModel.loadCurrentWeather()
             } else {
+                viewModel.permDenied = true
                 Toast.makeText(
                     this@MainActivity,
                     "Location Permission not Granted 💀❌",
@@ -55,7 +57,8 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = Color.Transparent.toArgb()
         window.navigationBarColor = Color.Transparent.toArgb()
 
-        getGeoLocation()
+        needPermission()
+        viewModel.loadCurrentWeather()
 
         setContent {
             LilCloudTheme {
@@ -66,7 +69,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun getGeoLocation() {
+    private fun needPermission() {
         if (!viewModel.isLocationEnabled()) {
             viewModel.showDialog.value = true
         }
@@ -83,29 +86,15 @@ class MainActivity : ComponentActivity() {
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
-        viewModel.showLoading.value = true                             /// here I am , fuckin around !!
-        Log.d("HowsTheWeather", "Loading Screen : ${viewModel.showLoading.value}")
+//        viewModel.showLoading.value = true                             /// here I am , fuckin around !!
+//        Log.d("HowsTheWeather", "Loading Screen : ${viewModel.showLoading.value}")
 
-        viewModel.locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location ->
-                if (location != null) {
-                    val lat = location.latitude
-                    val lon = location.longitude
-                    Log.d("HowsTheWeather", "Latitude: $lat, Longitude: $lon")
-                    viewModel.loadCurrentWeather(lat, lon)
-                } else {
-                    Log.d("HowsTheWeather", "Latitude: NULL, Longitude: NULL")
-                }
-            }
-            .addOnFailureListener {
-                Log.e("HowsTheWeather", "Failed to get GEO POSITION", it)
-            }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if(viewModel.currentCondition.value == null && !viewModel.showLoading.value) {
-            getGeoLocation()
-        }
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        if(viewModel.currentCondition.value == null && !viewModel.showLoading.value) {
+//            getGeoLocation()
+//        }
+//    }
 }

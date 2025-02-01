@@ -1,5 +1,6 @@
 package com.karan.lilcloud.viewModel
 
+import android.annotation.SuppressLint
 import java.time.format.TextStyle
 import android.app.Application
 import android.content.Context
@@ -11,9 +12,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.karan.lilcloud.R
@@ -57,12 +60,14 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
         LocationServices.getFusedLocationProviderClient(applicationContext)
     val gson = Gson()
 
-    lateinit var data : List<WeatherData>
+    var permDenied : Boolean = false
+
+    lateinit var data : LiveData<List<WeatherData>>
 
     init {
         viewModelScope.launch(dispatcher) {
-            data = repo.getAllWeatherData()
-            Log.d("HowsTheWeather", "database of size : ${data.size}")
+            data = repo.getAllWeatherData().asLiveData()
+            Log.d("HowsTheWeather", "database of size : ${data.value?.size}")
         }
     }
 
@@ -70,7 +75,7 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     var showDialog = mutableStateOf<Boolean>(false)
     var showLoading = mutableStateOf<Boolean>(false)
 
-    val screens : MutableList<String> = getPrefLocations()
+//    val screens : MutableList<String> = getPrefLocations()
 
     // API responses
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
@@ -81,48 +86,23 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
-    fun loadCurrentWeather(lat: Double, lon: Double) {
-
-
-
-
-//        val cacheFile1 = File(applicationContext.cacheDir, "current_condition.json")
-//        val cacheFile2 = File(applicationContext.cacheDir, "daily_forecast.json")
-//        val cacheFile3 = File(applicationContext.cacheDir, "half_day.json")
-//        val cacheFile4 = File(applicationContext.cacheDir, "quin_forecast.json")
-//        if (cacheFile1.exists() && cacheFile2.exists() && cacheFile3.exists() && cacheFile4.exists()) {
-//            viewModelScope.launch(dispatcher) {
-//                val json1 = cacheFile1.readText()
-//                currentCondition.value = gson.fromJson(
-//                    json1,
-//                    CurrentConditionResponse.CurrentConditionResponseItem::class.java
-//                )
-//                val json2 = cacheFile2.readText()
-//                dailyForecast.value = gson.fromJson(json2, DailyForecastResponse::class.java)
-//                val json3 = cacheFile3.readText()
-//                halfDayForecast.apply {
-//                    clear()
-//                    addAll(gson.fromJson(json3, HalfDayForecastResponse::class.java))
-//                }
-//                val json4 = cacheFile4.readText()
-//                quinForecastResponse.value = gson.fromJson(json4, QuinForecastResponse::class.java)
-//
-//                Log.d("HowsTheWeather", "Caching Loaded Successfully !!! ")
-//                Log.d("HowsTheWeather", currentCondition.value.toString())
-//                Log.d("HowsTheWeather", dailyForecast.value.toString())
-//            }
-//            return
-//        }
-
-        if(data.isEmpty()) {
-
-
-
+    fun loadCurrentWeather() {
+        if(data.value == null || data.value?.isEmpty() == true) {
+            if(!permDenied && isLocationEnabled()) {
+                getCoordinates(!permDenied)?.also {
+                    refresh("${it.first},${it.second}")
+                }
+            }
+            return
         }
+    }
 
+
+
+    fun refresh(geoPosition: String) {
         viewModelScope.launch(dispatcher) {
             try {
-                getLocationInfo("$lat,$lon")
+                getLocationInfo(geoPosition)
                 geoLocation.value?.key?.also { key ->
 //                    screens.add(0, key)
                     coroutineScope {
@@ -315,6 +295,30 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             1L -> "Tomorrow"
             else -> day.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
         }
+    }
+
+
+
+    // Use only when Permission is provided
+    @SuppressLint("MissingPermission")
+    fun getCoordinates(isPermissionGranted : Boolean) : Pair<Double, Double>? {
+        var cord : Pair<Double, Double>? = null
+        if (isPermissionGranted) {
+            locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        cord = Pair(location.latitude, location.longitude)
+                        Log.d("HowsTheWeather", "Latitude: ${cord.first}, Longitude: ${cord.second}")
+//                        loadCurrentWeather(cord.first, cord.second)
+                    } else {
+                        Log.d("HowsTheWeather", "Latitude: NULL, Longitude: NULL")
+                    }
+                }
+                .addOnFailureListener {
+                    Log.e("HowsTheWeather", "Failed to get GEO POSITION", it)
+                }
+        }
+        return cord
     }
 
 }

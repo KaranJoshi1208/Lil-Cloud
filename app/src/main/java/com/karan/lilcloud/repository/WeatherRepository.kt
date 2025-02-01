@@ -12,6 +12,7 @@ import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
 import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
 import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.model.room.WeatherDataBase
+import kotlinx.coroutines.flow.Flow
 
 class WeatherRepository (db : WeatherDataBase) {
 
@@ -45,7 +46,7 @@ class WeatherRepository (db : WeatherDataBase) {
 
     // db
 
-    suspend fun getAllWeatherData() : List<WeatherData>{
+    suspend fun getAllWeatherData() : Flow<List<WeatherData>>{
         return dao.getAllWeatherData()
     }
 }

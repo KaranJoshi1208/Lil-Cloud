@@ -15,11 +15,10 @@ import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
 @Entity(tableName = "weather_data")
 @TypeConverters(WeatherDataConverters::class)
 class WeatherData(
-    @PrimaryKey val id : Int,
     @PrimaryKey val locationKey : String,
-    val geoLocation : MutableState<GeoPositionResponse?>,
-    val currentCondition : MutableState<CurrentConditionResponse.CurrentConditionResponseItem?>,
-    val dailyForecast : MutableState<DailyForecastResponse?>,
-    val halfDayForecast : SnapshotStateList<HalfDayForecastResponse.HalfDayForecastResponseItem?>,
-    val quinForecastResponse : MutableState<QuinForecastResponse?>
+    val geoLocation : GeoPositionResponse,
+    val currentCondition : CurrentConditionResponse.CurrentConditionResponseItem,
+    val dailyForecast : DailyForecastResponse,
+    val halfDayForecast : HalfDayForecastResponse,
+    val quinForecastResponse : QuinForecastResponse
 )

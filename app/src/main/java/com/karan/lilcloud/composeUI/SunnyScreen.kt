@@ -61,7 +61,10 @@ fun WeatherScreen(
     if (viewModel.showDialog.value) {
         EnableLocationDialog(
             { viewModel.showLocationSettings() },
-            { viewModel.showDialog.value = false }
+            {
+                viewModel.showDialog.value = false
+
+            }
         )
     }
 

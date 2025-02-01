@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -19,7 +20,7 @@ interface WeatherDAO {
     suspend fun updateWeatherData(data: WeatherData)
 
     // to get List of all locations
-    @Query("SELECT locationKey FROM weather_data ORDER BY id ASC ")
+    @Query("SELECT locationKey FROM weather_data")
     suspend fun getAllLocations() : List<String>
 
     // to get weather data by key
@@ -28,7 +29,7 @@ interface WeatherDAO {
 
     // to get a list of containing all weather data entries
     @Query("SELECT * FROM weather_data")
-    suspend fun getAllWeatherData() : List<WeatherData>
+    fun getAllWeatherData() : Flow<List<WeatherData>>
 
     // to delete a specific weather data entry
     @Query("DELETE FROM weather_data WHERE locationKey = :key")
