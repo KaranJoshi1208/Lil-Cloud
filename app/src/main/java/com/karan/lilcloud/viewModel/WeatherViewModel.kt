@@ -8,6 +8,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -33,6 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
@@ -40,7 +43,7 @@ import java.util.Calendar
 import java.util.Locale
 import kotlin.math.absoluteValue
 
-open class WeatherViewModel(application: Application) : AndroidViewModel(application) {
+class WeatherViewModel(application: Application) : AndroidViewModel(application) {
 
     // Keys
     companion object {
@@ -60,14 +63,16 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
         LocationServices.getFusedLocationProviderClient(applicationContext)
     val gson = Gson()
 
-    var permDenied : Boolean = false
+    var permissionDenied: Boolean = false
 
-    lateinit var data : LiveData<List<WeatherData>>
+    var data = MutableStateFlow<List<WeatherData>>(emptyList())
 
     init {
         viewModelScope.launch(dispatcher) {
-            data = repo.getAllWeatherData().asLiveData()
-            Log.d("HowsTheWeather", "database of size : ${data.value?.size}")
+            repo.getAllWeatherData().collect {
+                data.value = it
+                Log.d("HowsTheWeather", "database of size : ${data.value.size}")
+            }
         }
     }
 
@@ -75,7 +80,6 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     var showDialog = mutableStateOf<Boolean>(false)
     var showLoading = mutableStateOf<Boolean>(false)
 
-//    val screens : MutableList<String> = getPrefLocations()
 
     // API responses
     var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
@@ -86,11 +90,24 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
-    fun loadCurrentWeather() {
-        if(data.value == null || data.value?.isEmpty() == true) {
-            if(!permDenied && isLocationEnabled()) {
-                getCoordinates(!permDenied)?.also {
-                    refresh("${it.first},${it.second}")
+    fun loadCurrentWeather(checkPermission: () -> Unit) {
+
+        if (data.value.isEmpty()) {
+
+            // Check For Required Permissions
+            checkPermission()
+            if (!isLocationEnabled()) {
+                showDialog.value = true
+            }
+
+            // If Permissions Granted , make API calls
+            if (!permissionDenied && isLocationEnabled()) {
+                getCoordinates { coordinates ->
+                    if (coordinates != null) {
+                        refresh("${coordinates.first},${coordinates.second}")
+                    } else {
+                        Log.e("HowsTheWeather", "Failed to retrieve coordinates.")
+                    }
                 }
             }
             return
@@ -98,8 +115,8 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     }
 
 
-
     fun refresh(geoPosition: String) {
+        showLoading.value = true
         viewModelScope.launch(dispatcher) {
             try {
                 getLocationInfo(geoPosition)
@@ -142,9 +159,9 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             currentCondition.value = response[0]
 
             // caching
-            val json = gson.toJson(currentCondition.value)
-            val cacheFile = File(applicationContext.cacheDir, "current_condition.json")
-            cacheFile.writeText(json)
+//            val json = gson.toJson(currentCondition.value)
+//            val cacheFile = File(applicationContext.cacheDir, "current_condition.json")
+//            cacheFile.writeText(json)
 
             Log.d("HowsTheWeather", currentCondition.value.toString())
         } catch (e: Exception) {
@@ -157,9 +174,9 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             dailyForecast.value = repo.getDailyForecast(locationKey)
 
             //caching
-            val json = gson.toJson(dailyForecast.value)
-            val cacheFile = File(applicationContext.cacheDir, "daily_forecast.json")
-            cacheFile.writeText(json)
+//            val json = gson.toJson(dailyForecast.value)
+//            val cacheFile = File(applicationContext.cacheDir, "daily_forecast.json")
+//            cacheFile.writeText(json)
 
             Log.d("HowsTheWeather", dailyForecast.value.toString())
         } catch (e: Exception) {
@@ -173,9 +190,9 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             halfDayForecast.addAll(repo.getHalfDayForecast(locationKey))
 
             // caching
-            val json = gson.toJson(halfDayForecast)
-            val cacheFile = File(applicationContext.cacheDir, "half_day.json")
-            cacheFile.writeText(json)
+//            val json = gson.toJson(halfDayForecast)
+//            val cacheFile = File(applicationContext.cacheDir, "half_day.json")
+//            cacheFile.writeText(json)
 
             Log.d("HowsTheWeather", "Completed ✔️")
         } catch (e: Exception) {
@@ -188,9 +205,9 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
             quinForecastResponse.value = repo.getQuinForecast(locationKey)
 
             // caching
-            val json = gson.toJson(quinForecastResponse.value)
-            val cacheFile = File(applicationContext.cacheDir, "quin_forecast.json")
-            cacheFile.writeText(json)
+//            val json = gson.toJson(quinForecastResponse.value)
+//            val cacheFile = File(applicationContext.cacheDir, "quin_forecast.json")
+//            cacheFile.writeText(json)
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error Fetching 5-days Forecast", e)
         }
@@ -199,13 +216,13 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
 
     // Utility functions
 
-    fun setPrefLocations(locations : MutableList<String>) {
+    fun setPrefLocations(locations: MutableList<String>) {
         val json = gson.toJson(locations)
         val pref = applicationContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
         pref.edit().putString(LOCATIONS_LIST_KEY, json).apply()
     }
 
-    fun getPrefLocations() : MutableList<String> {
+    fun getPrefLocations(): MutableList<String> {
         val pref = applicationContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
         val json = pref.getString(LOCATIONS_LIST_KEY, null) ?: return mutableListOf<String>()
         return gson.fromJson(json, object : TypeToken<MutableList<String>>() {}.type)
@@ -298,27 +315,26 @@ open class WeatherViewModel(application: Application) : AndroidViewModel(applica
     }
 
 
-
     // Use only when Permission is provided
     @SuppressLint("MissingPermission")
-    fun getCoordinates(isPermissionGranted : Boolean) : Pair<Double, Double>? {
-        var cord : Pair<Double, Double>? = null
-        if (isPermissionGranted) {
-            locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-                .addOnSuccessListener { location ->
-                    if (location != null) {
-                        cord = Pair(location.latitude, location.longitude)
-                        Log.d("HowsTheWeather", "Latitude: ${cord.first}, Longitude: ${cord.second}")
-//                        loadCurrentWeather(cord.first, cord.second)
-                    } else {
-                        Log.d("HowsTheWeather", "Latitude: NULL, Longitude: NULL")
-                    }
+    fun getCoordinates(useCoordinates : (Pair<Double, Double>?) -> Unit) {
+        var cord: Pair<Double, Double>? = null
+        locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    cord = Pair(location.latitude, location.longitude)
+                    Log.d(
+                        "HowsTheWeather",
+                        "Latitude: ${cord.first}, Longitude: ${cord.second}"
+                    )
+                    useCoordinates(cord)
+                } else {
+                    Log.d("HowsTheWeather", "Latitude: NULL, Longitude: NULL")
                 }
-                .addOnFailureListener {
-                    Log.e("HowsTheWeather", "Failed to get GEO POSITION", it)
-                }
-        }
-        return cord
+            }
+            .addOnFailureListener {
+                Log.e("HowsTheWeather", "Failed to get GEO POSITION", it)
+            }
     }
 
 }

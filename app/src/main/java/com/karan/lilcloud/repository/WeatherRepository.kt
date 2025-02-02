@@ -46,7 +46,7 @@ class WeatherRepository (db : WeatherDataBase) {
 
     // db
 
-    suspend fun getAllWeatherData() : Flow<List<WeatherData>>{
+    fun getAllWeatherData() : Flow<List<WeatherData>>{
         return dao.getAllWeatherData()
     }
 }

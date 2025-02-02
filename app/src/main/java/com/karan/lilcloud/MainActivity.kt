@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.Priority
 import com.karan.lilcloud.composeUI.WeatherScreen
+import com.karan.lilcloud.helper.PermissionManager
 import com.karan.lilcloud.navigation.NavGraph
 import com.karan.lilcloud.ui.theme.LilCloudTheme
 import com.karan.lilcloud.viewModel.WeatherViewModel
@@ -34,9 +35,9 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 Toast.makeText(this@MainActivity, "Location Permission Granted 👍💦", Toast.LENGTH_SHORT).show()
-                viewModel.loadCurrentWeather()
+//                viewModel.loadCurrentWeather()
             } else {
-                viewModel.permDenied = true
+                viewModel.permissionDenied = true
                 Toast.makeText(
                     this@MainActivity,
                     "Location Permission not Granted 💀❌",
@@ -57,8 +58,10 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = Color.Transparent.toArgb()
         window.navigationBarColor = Color.Transparent.toArgb()
 
-        needPermission()
-        viewModel.loadCurrentWeather()
+//        needPermission()
+        viewModel.loadCurrentWeather {
+            needPermission()
+        }
 
         setContent {
             LilCloudTheme {
@@ -70,9 +73,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun needPermission() {
-        if (!viewModel.isLocationEnabled()) {
-            viewModel.showDialog.value = true
-        }
+//        if (!viewModel.isLocationEnabled()) {
+//            viewModel.showDialog.value = true
+//        }
         if (ActivityCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
