@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -30,6 +31,7 @@ import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
 import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.model.room.WeatherDataBase
 import com.karan.lilcloud.repository.WeatherRepository
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -102,34 +104,49 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
             // If Permissions Granted , make API calls
             if (!permissionDenied && isLocationEnabled()) {
+
+                val weather = WeatherData(isCurrentLocation = true)
+
                 getCoordinates { coordinates ->
                     if (coordinates != null) {
-                        refresh("${coordinates.first},${coordinates.second}")
+//                        weather.locationKey = "${coordinates.first},${coordinates.second}"
+                        refreshCurrentLocation("${coordinates.first},${coordinates.second}", weather)
                     } else {
                         Log.e("HowsTheWeather", "Failed to retrieve coordinates.")
                     }
                 }
+            } else {
+                TODO("Direct user to the 'MANAGE LOCATIONS' screen , to select a location")
             }
             return
         }
+
+        TODO("Check if the 'data' is outdated ?")
     }
 
 
-    fun refresh(geoPosition: String) {
+    fun refreshCurrentLocation(geoPosition: String, weather : WeatherData) {
         showLoading.value = true
         viewModelScope.launch(dispatcher) {
             try {
                 getLocationInfo(geoPosition)
                 geoLocation.value?.key?.also { key ->
-//                    screens.add(0, key)
-                    coroutineScope {
-                        listOf(
-                            async { getCurrentCondition(key) },
-                            async { getDailyForecast(key) },
-                            async { getHalfDayForecast(key) },
-                            async { getQuinForecast(key) }
-                        ).awaitAll()
-                    }
+                             val cc = async { getCurrentCondition(key) }
+                            val df = async { getDailyForecast(key) }
+                            val hdf = async { getHalfDayForecast(key) }
+                            val qf = async { getQuinForecast(key) }
+
+                        weather.apply {
+                            locationKey = key
+                            geoLocation = this@WeatherViewModel.geoLocation.value
+                            currentCondition = cc.await()
+                            dailyForecast = df.await()
+                            halfDayForecast = hdf.await()
+                            quinForecastResponse = qf.await()
+                        }
+
+                        repo.insertWeatherData(weather)
+
                 } ?: Log.d("HowsTheWeather", "Location Response is NULL")
 
             } catch (e: Exception) {
@@ -143,19 +160,23 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
 
     // API Calls
-    suspend fun getLocationInfo(geoPosition: String) {
+
+    suspend fun getLocationInfo(geoPosition: String) : GeoPositionResponse? {
+        var response : GeoPositionResponse? = null
         try {
-            val response = repo.getLocationInfo(geoPosition)
+            response = repo.getLocationInfo(geoPosition)
             geoLocation.value = response
             Log.d("HowsTheWeather", geoLocation.value.toString())
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching GeoLocation", e)
         }
+        return response
     }
 
-    suspend fun getCurrentCondition(locationKey: String) {
+    suspend fun getCurrentCondition(locationKey: String) : CurrentConditionResponse.CurrentConditionResponseItem? {
+        var response : CurrentConditionResponse? = null
         try {
-            val response = repo.getCurrentCondition(locationKey)
+            response = repo.getCurrentCondition(locationKey)
             currentCondition.value = response[0]
 
             // caching
@@ -167,11 +188,16 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching CurrentCondition", e)
         }
+        return response?.get(0)
     }
 
-    suspend fun getDailyForecast(locationKey: String) {
+    suspend fun getDailyForecast(locationKey: String) : DailyForecastResponse?{
+        var response : DailyForecastResponse? = null
         try {
-            dailyForecast.value = repo.getDailyForecast(locationKey)
+            repo.getDailyForecast(locationKey).also {
+                dailyForecast.value = it
+                response = it
+            }
 
             //caching
 //            val json = gson.toJson(dailyForecast.value)
@@ -182,12 +208,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching DailyForecast", e)
         }
+
+        return response
     }
 
 
-    suspend fun getHalfDayForecast(locationKey: String) {
+    suspend fun getHalfDayForecast(locationKey: String) : HalfDayForecastResponse? {
+        var response : HalfDayForecastResponse? = null
         try {
-            halfDayForecast.addAll(repo.getHalfDayForecast(locationKey))
+            halfDayForecast.addAll(repo.getHalfDayForecast(locationKey).also{ response = it})
 
             // caching
 //            val json = gson.toJson(halfDayForecast)
@@ -198,11 +227,17 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching Half Day Forecast", e)
         }
+
+        return response
     }
 
-    suspend fun getQuinForecast(locationKey: String) {
+    suspend fun getQuinForecast(locationKey: String) : QuinForecastResponse? {
+        var response : QuinForecastResponse? = null
         try {
-            quinForecastResponse.value = repo.getQuinForecast(locationKey)
+            repo.getQuinForecast(locationKey).also {
+                quinForecastResponse.value = it
+                response = it
+            }
 
             // caching
 //            val json = gson.toJson(quinForecastResponse.value)
@@ -211,6 +246,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error Fetching 5-days Forecast", e)
         }
+
+        return response
     }
 
 

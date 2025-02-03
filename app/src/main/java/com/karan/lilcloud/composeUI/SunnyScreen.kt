@@ -103,7 +103,7 @@ fun WeatherScreen(
                 )
             }
 
-            viewModel.currentCondition.value?.let {
+            viewModel.data.value?.let {
                 WeatherInfo(viewModel, scrollState)
             }
                 ?: if (viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/

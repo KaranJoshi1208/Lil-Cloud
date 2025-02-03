@@ -1,7 +1,5 @@
 package com.karan.lilcloud.model.room
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -15,10 +13,11 @@ import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
 @Entity(tableName = "weather_data")
 @TypeConverters(WeatherDataConverters::class)
 class WeatherData(
-    @PrimaryKey val locationKey : String,
-    val geoLocation : GeoPositionResponse,
-    val currentCondition : CurrentConditionResponse.CurrentConditionResponseItem,
-    val dailyForecast : DailyForecastResponse,
-    val halfDayForecast : HalfDayForecastResponse,
-    val quinForecastResponse : QuinForecastResponse
+    @PrimaryKey var locationKey : String = "",
+    var geoLocation : GeoPositionResponse? = null,
+    var currentCondition : CurrentConditionResponse.CurrentConditionResponseItem? = null,
+    var dailyForecast : DailyForecastResponse? = null,
+    var halfDayForecast : HalfDayForecastResponse? = null,
+    var quinForecastResponse : QuinForecastResponse? = null,
+    var isCurrentLocation : Boolean = false
 )
