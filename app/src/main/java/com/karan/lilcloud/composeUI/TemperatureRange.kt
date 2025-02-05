@@ -9,7 +9,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,20 +18,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
+import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.viewModel.WeatherViewModel
 
 @Composable
 fun TemperatureGraph(
     viewModel: WeatherViewModel,
+    weather : WeatherData,
     modifier: Modifier = Modifier,
     lineColor: Color = Color.Green,
 ) {
 
-    lateinit var temperatures : SnapshotStateList<HalfDayForecastResponse.HalfDayForecastResponseItem?>
+    var temperatures : MutableList<HalfDayForecastResponse.HalfDayForecastResponseItem?> = mutableListOf()
 
-    viewModel.halfDayForecast.let {
-        temperatures = it
-    }
+    weather.halfDayForecast?.let {
+        temperatures.addAll(it)
+    } ?: return
 
     val (maxTemp, minTemp) = temperatures.fold(Double.MIN_VALUE to Double.MAX_VALUE) { acc, item ->
         val temp = item?.temperature?.value ?: 0.0

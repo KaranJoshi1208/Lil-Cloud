@@ -26,15 +26,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.viewModel.WeatherViewModel
 
 @Composable
 fun QuinForecast(
     viewModel: WeatherViewModel,
+    weather : WeatherData,
     modifier : Modifier,
 ) {
 
-    val data = viewModel.quinForecastResponse.value?.dailyForecasts
+    val data = weather.quinForecastResponse?.dailyForecasts ?: return
 
     Card(
         colors = CardDefaults.cardColors(

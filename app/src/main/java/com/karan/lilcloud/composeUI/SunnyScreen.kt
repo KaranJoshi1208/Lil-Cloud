@@ -5,7 +5,6 @@ import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,11 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -31,11 +28,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -50,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.navigation.Screens
 import com.karan.lilcloud.viewModel.WeatherViewModel
 import kotlin.math.roundToInt
@@ -61,10 +59,12 @@ fun WeatherScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val data = viewModel.data.collectAsState().value
     val scrollState = rememberScrollState(0)
+    val pageCount = remember { derivedStateOf { data.size } }
     val pagerState = rememberPagerState {   // potential bug 🚩
-        Log.d("HowsTheWeather", "PagerState value : ${viewModel.data.value.size}")
-        viewModel.data.value.size
+        Log.d("HowsTheWeather", "PagerState value : ${data.size}")
+        pageCount.value
     }
 
     if (viewModel.showDialog.value) {
@@ -113,7 +113,7 @@ fun WeatherScreen(
 
             HorizontalPagerIndicator(
                 pagerState = pagerState,
-                pageCount = viewModel.data.value.size,
+                pageCount = pageCount.value,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(12.dp)
@@ -121,10 +121,11 @@ fun WeatherScreen(
 
             HorizontalPager(
                 state = pagerState,
+                userScrollEnabled = true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) { page ->
-                WeatherInfo(viewModel, scrollState)
+                WeatherInfo(viewModel, data[page], scrollState)
             }
 
 
@@ -141,12 +142,13 @@ fun WeatherScreen(
 @Composable
 fun WeatherInfo(
     viewModel: WeatherViewModel,
+    weather : WeatherData,
     scrollState: ScrollState,
 //    modifier: Modifier = Modifier
 ) {
 
-    val weather = viewModel.currentCondition.value
-    val location = viewModel.geoLocation.value
+    val cc = weather.currentCondition
+    val gl = weather.geoLocation
 
     Column(
         modifier = Modifier
@@ -159,7 +161,7 @@ fun WeatherInfo(
 
 
         Text(
-            text = location?.localizedName?.toString() ?: "where ?",
+            text = gl?.localizedName?.toString() ?: "where ?",
             fontSize = 28.sp,
             textAlign = TextAlign.Center,
             color = Color.White,
@@ -177,7 +179,7 @@ fun WeatherInfo(
 
 
         Text(
-            text = " " + weather?.temperature?.metric?.value?.roundToInt() + "°",
+            text = " " + cc?.temperature?.metric?.value?.roundToInt() + "°",
             fontSize = 100.sp,
             fontWeight = FontWeight.Thin,
             color = Color.White,
@@ -187,7 +189,7 @@ fun WeatherInfo(
                 )
             )
         )
-        val temp = weather?.temperatureSummary?.past6HourRange
+        val temp = cc?.temperatureSummary?.past6HourRange
 
         Text(
             text = "${temp?.maximum?.metric?.value.toString()}° / ${temp?.minimum?.metric?.value.toString()}°",
@@ -197,7 +199,7 @@ fun WeatherInfo(
         )
 
         Text(
-            text = weather?.weatherText.toString(),
+            text = cc?.weatherText.toString(),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
@@ -207,16 +209,18 @@ fun WeatherInfo(
             color = Color.White,
         )
 
-        WeatherDetails(viewModel, Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp))
+        WeatherDetails(viewModel, weather, Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp))
 //        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
-        TemperatureGraph(viewModel, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
-        QuinForecast(viewModel, Modifier.padding(16.dp))
+        TemperatureGraph(viewModel, weather, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
+        QuinForecast(viewModel, weather, Modifier.padding(16.dp))
         Twilight(viewModel, Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp))
     }
 }
 
 @Composable
-fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
+fun WeatherDetails(viewModel: WeatherViewModel, weather : WeatherData, modifier: Modifier = Modifier) {
+    val cc = weather.currentCondition ?: return
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -233,7 +237,6 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                 contentColor = Color.Unspecified,
                 ),
         ) {
-            val cc = viewModel.currentCondition.value
 
             Row(
                 modifier = Modifier
@@ -261,7 +264,7 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val temp = cc?.temperatureSummary?.past6HourRange
+                        val temp = cc.temperatureSummary?.past6HourRange
                         Text(
                             text = temp?.maximum?.metric?.value.toString(),
                             fontSize = 20.sp,
@@ -294,7 +297,7 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                 ) {
                     InfoElement(
                         name = "Humidity",
-                        value = cc?.relativeHumidity.toString() + " %"
+                        value = cc.relativeHumidity.toString() + " %"
                     )
                     Spacer(
                         modifier = Modifier
@@ -305,7 +308,7 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
 
                     InfoElement(
                         name = "Real Feel",
-                        value = cc?.realFeelTemperature?.metric?.value.toString() + " °C"
+                        value = cc.realFeelTemperature?.metric?.value.toString() + " °C"
                     )
 
                     Spacer(
@@ -317,7 +320,7 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
 
                     InfoElement(
                         name = "UV Index",
-                        value = cc?.uVIndex.toString() + " "
+                        value = cc.uVIndex.toString() + " "
                     )
 
                     Spacer(
@@ -329,7 +332,7 @@ fun WeatherDetails(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
 
                     InfoElement(
                         name = "Pressure",
-                        value = cc?.pressure?.metric?.value.toString() + " mbar"
+                        value = cc.pressure?.metric?.value.toString() + " mbar"
                     )
 
                     Spacer(
