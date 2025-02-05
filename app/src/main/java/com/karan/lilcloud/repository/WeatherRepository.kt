@@ -1,5 +1,6 @@
 package com.karan.lilcloud.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.RoomDatabase
 import com.karan.lilcloud.BuildConfig
@@ -51,6 +52,7 @@ class WeatherRepository (db : WeatherDataBase) {
     }
 
     suspend fun insertWeatherData(weather : WeatherData) {
+        Log.d("HowsTheWeather", "Inserting into database (Repo call)")
         return dao.insertWeatherData(weather)
     }
 }

@@ -1,5 +1,6 @@
 package com.karan.lilcloud.composeUI
 
+import android.util.Log
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -45,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.karan.lilcloud.navigation.Screens
 import com.karan.lilcloud.viewModel.WeatherViewModel
 import kotlin.math.roundToInt
@@ -57,14 +62,15 @@ fun WeatherScreen(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState(0)
+    val pagerState = rememberPagerState {   // potential bug 🚩
+        Log.d("HowsTheWeather", "PagerState value : ${viewModel.data.value.size}")
+        viewModel.data.value.size
+    }
 
     if (viewModel.showDialog.value) {
         EnableLocationDialog(
             { viewModel.showLocationSettings() },
-            {
-                viewModel.showDialog.value = false
-
-            }
+            { viewModel.showDialog.value = false }
         )
     }
 
@@ -103,11 +109,31 @@ fun WeatherScreen(
                 )
             }
 
-            viewModel.data.value?.let {
+            // Implement Horizontal pager
+
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                pageCount = viewModel.data.value.size,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(12.dp)
+            )
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) { page ->
                 WeatherInfo(viewModel, scrollState)
             }
-                ?: if (viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/
-                }
+
+
+
+//            viewModel.data.value?.let {
+//                WeatherInfo(viewModel, scrollState)
+//            }
+//                ?: if (viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/ }
+
         }
     }
 }
