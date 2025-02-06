@@ -41,12 +41,13 @@ import kotlin.math.sin
 @Composable
 fun Twilight(
     viewModel: WeatherViewModel,
+    weather : WeatherData,
     modifier : Modifier,
 ) {
     lateinit var data : Pair<Int, Pair<String, String>>
 
-    viewModel.dailyForecast.value?.let {
-        data = viewModel.getTwilight()
+    weather.dailyForecast?.let {
+        data = viewModel.getTwilight(it)
     } ?: return
 
     val progress = data.first

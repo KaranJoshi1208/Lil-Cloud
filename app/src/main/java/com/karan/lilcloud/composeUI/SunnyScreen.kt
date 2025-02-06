@@ -62,7 +62,7 @@ fun WeatherScreen(
     val data = viewModel.data.collectAsState().value
     val scrollState = rememberScrollState(0)
     val pageCount = remember { derivedStateOf { data.size } }
-    val pagerState = rememberPagerState {   // potential bug 🚩
+    val pagerState = rememberPagerState {                                  // watch out, potential bug 🚩
         Log.d("HowsTheWeather", "PagerState value : ${data.size}")
         pageCount.value
     }
@@ -213,7 +213,7 @@ fun WeatherInfo(
 //        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
         TemperatureGraph(viewModel, weather, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
         QuinForecast(viewModel, weather, Modifier.padding(16.dp))
-        Twilight(viewModel, Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp))
+        Twilight(viewModel, weather, Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp))
     }
 }
 

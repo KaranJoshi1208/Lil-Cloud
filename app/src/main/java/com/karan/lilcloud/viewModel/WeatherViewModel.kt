@@ -8,13 +8,9 @@ import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -31,15 +27,10 @@ import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
 import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.model.room.WeatherDataBase
 import com.karan.lilcloud.repository.WeatherRepository
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.File
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
@@ -303,15 +294,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     // Data Providers
 
-    fun getTwilight(): Pair<Int, Pair<String, String>> {
+    fun getTwilight(df : DailyForecastResponse): Pair<Int, Pair<String, String>> {
 
-        val regex =
-            Regex("""(\d{2}):(\d{2})""")                      // Just need Hours and Minutes
+        // Just need Hours and Minutes
+        val regex = Regex("""(\d{2}):(\d{2})""")
 
         var sunrise: String = ""
         var sunset: String = ""
 
-        val rise = dailyForecast.value?.dailyForecasts?.get(0)?.sun?.rise.toString().let {
+        val rise = df.dailyForecasts?.get(0)?.sun?.rise.toString().let {
             Log.d("HowsTheWeather", "Inside string")
             regex.find(it)?.groupValues?.let {
                 sunrise = it[0]
@@ -321,7 +312,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 hour * 60 + min
             }
         } ?: -1
-        val set = dailyForecast.value?.dailyForecasts?.get(0)?.sun?.set.toString().let {
+        val set = df.dailyForecasts?.get(0)?.sun?.set.toString().let {
             regex.find(it)?.groupValues?.let {
                 sunset = it[0]
                 Log.d("HowsTheWeather", "Inside Regex : $sunset")
