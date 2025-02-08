@@ -1,13 +1,19 @@
 package com.karan.lilcloud.composeUI
 
 import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -17,8 +23,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.TextFieldDefaults
@@ -31,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,6 +55,7 @@ import androidx.compose.ui.unit.sp
 @Preview(showBackground = true, showSystemUi = false)
 @Composable
 fun ManageLocations() {
+    var isExpended = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -70,7 +78,7 @@ fun ManageLocations() {
                 contentDescription = "Previous Screen",
                 modifier = Modifier
                     .padding(start = 12.dp)
-                    .size(32.dp)
+                    .size(28.dp)
 
             )
 
@@ -84,16 +92,15 @@ fun ManageLocations() {
             )
         }
 
-//        SearchBar(Modifier.padding(horizontal = 12.dp))
-        TopCities()
-
+        SearchBar(isExpended, Modifier.padding(horizontal = 12.dp))
+        TopCities(isExpended)
 
     }
 
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier) {
+fun SearchBar(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) {
     val query = remember { mutableStateOf("") }
     val isFocused = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -101,7 +108,6 @@ fun SearchBar(modifier: Modifier = Modifier) {
     TextField(
         value = query.value,
         onValueChange = {query.value = it},
-
         shape = RoundedCornerShape(32.dp),
         leadingIcon = {
             Image(
@@ -109,7 +115,7 @@ fun SearchBar(modifier: Modifier = Modifier) {
                 contentDescription = "Search ?",
                 modifier = Modifier
                     .padding(start = 12.dp)
-                    .alpha(0.7f)
+                    .alpha(0.5f)
             )
         },
         trailingIcon = {
@@ -121,6 +127,7 @@ fun SearchBar(modifier: Modifier = Modifier) {
                         .padding(end = 12.dp)
                         .clickable(enabled = true) {
                             focusManager.clearFocus()
+                            isExpended.value = false
                         }
                 )
             }
@@ -128,12 +135,13 @@ fun SearchBar(modifier: Modifier = Modifier) {
         placeholder = {
             Text(
                 text = "Which City ?",
+                fontSize = 14.sp,
                 modifier = Modifier
                     .alpha(0.5f)
                     .padding(start = 8.dp)
             )
         },
-        textStyle = TextStyle(fontSize = 20.sp),
+        textStyle = TextStyle(fontSize = 16.sp),
         maxLines = 1,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         colors = TextFieldDefaults.colors(
@@ -141,23 +149,219 @@ fun SearchBar(modifier: Modifier = Modifier) {
             focusedIndicatorColor = Color.Transparent,
             cursorColor = Color.Blue
         ),
+
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
+            .size(52.dp)
             .onFocusChanged {
+                isExpended.value = true                     // might shift this line to clickable{} 🚩
                 isFocused.value = it.isFocused
             }
     )
+    if(isFocused.value) SearchItems()
 
 }
 
 @Composable
-fun TopCities(modifier: Modifier = Modifier) {
+fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) {
 
     Card(
-        
+//        shape = CardDefaults.elevatedShape,
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .animateContentSize(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            )
+            .clickable(true) {
+                isExpended.value = !isExpended.value
+            }
     ) {
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth()
 
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .height(32.dp)
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .background(color = Color(0x12000000))
+//                        .weight(1f)
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.location),
+                        contentDescription = "Locate Me",
+                        modifier = Modifier
+                            .padding(start = 8.dp, end = 4.dp)
+                            .size(18.dp)
+                    )
+                    Text(
+                        text = "Locate Me",
+                        fontWeight = FontWeight.W200,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .height(32.dp)
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .background(color = Color(0x12000000))
+//                        .weight(1f)
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.globe_location_pin),
+                        contentDescription = "Locate Me",
+                        modifier = Modifier
+                            .padding(start = 8.dp, end = 4.dp)
+                            .size(16.dp)
+                    )
+                    Text(
+                        text = "Coordinates",
+                        fontWeight = FontWeight.W200,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+
+                    )
+                }
+            }
+
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .fillMaxWidth()
+            ) {
+                City("Almora")
+                City("Dwarahat")
+                City("Nanital")
+                City("Ohio")
+                City("Tokyo")
+
+            }
+
+            if(isExpended.value) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth()
+                ) {
+                    City("Haldwani")
+                    City("Bageshwar")
+                    City("Rishikesh")
+                    City("Haridwar")
+                    City("Mussoorie")
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth()
+                ) {
+                    City("Delhi")
+                    City("Noida")
+                    City("Dwarka")
+                    City("Niger")
+                    City("Chile")
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth()
+                ) {
+                    City("Nanital")
+                    City("Noida")
+                    City("Dwarahat")
+                    City("Niger")
+                    City("Chile")
+                }
+            }
+        }
     }
-    
+}
+
+@Composable
+fun City(city : String, modifier : Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(color = Color(0x12000000))
+            .then(modifier)
+    ) {
+        Text(
+            text = city,
+            color = Color.Black,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.W200,
+            modifier = Modifier
+                .padding(horizontal = 10.dp, vertical = 4.dp)
+        )
+    }
+}
+
+@Composable
+fun SearchItems(modifier: Modifier = Modifier) {
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+    ) {
+        items(1) {index ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                ) {
+                    Text(
+                        text = "Dwarahat",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W300,
+                        modifier = Modifier
+
+                    )
+                    Text(
+                        text = "UP, India",
+                        fontSize = 12.sp,
+                        color = Color.Black.copy(0.5f),
+                        modifier = Modifier
+                    )
+                }
+
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.add),
+                    contentDescription = "Add?",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(32.dp)
+                )
+
+            }
+        }
+    }
+
 }

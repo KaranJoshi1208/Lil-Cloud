@@ -11,6 +11,7 @@ import com.karan.lilcloud.model.accuWeather.DailyForecastResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
 import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
+import com.karan.lilcloud.model.accuWeather.SearchResponse
 import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.model.room.WeatherDataBase
 import kotlinx.coroutines.flow.Flow
@@ -44,6 +45,9 @@ class WeatherRepository (db : WeatherDataBase) {
         return accuAPI.getQuinForecast(locationKey, API_KEY_ACCU)
     }
 
+    suspend fun getSearchResponse(q : String) : SearchResponse {
+        return accuAPI.getSearch(q, API_KEY_ACCU)
+    }
 
     // db
 

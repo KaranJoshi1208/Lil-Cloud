@@ -52,4 +52,10 @@ interface ApiTemplate {
         @Query("apikey") apiKey : String,
         @Query("metric") metric : String = "true"
     ) : QuinForecastResponse
+
+    @GET("/locations/v1/cities/autocomplete")
+    suspend fun getSearch(
+        @Query("q") q : String,
+        @Query("apikey") apiKey : String,
+    ) : SearchResponse
 }
