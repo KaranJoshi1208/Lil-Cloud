@@ -94,6 +94,7 @@ fun ManageLocations() {
 
         SearchBar(isExpended, Modifier.padding(horizontal = 12.dp))
         TopCities(isExpended)
+        Locations()
 
     }
 
@@ -155,7 +156,8 @@ fun SearchBar(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
             .fillMaxWidth()
             .size(52.dp)
             .onFocusChanged {
-                isExpended.value = true                     // might shift this line to clickable{} 🚩
+                isExpended.value =
+                    true                     // might shift this line to clickable{} 🚩
                 isFocused.value = it.isFocused
             }
     )
@@ -169,7 +171,7 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
     Card(
 //        shape = CardDefaults.elevatedShape,
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 20.dp)
             .fillMaxWidth()
             .animateContentSize(
                 animationSpec = tween(
@@ -198,7 +200,7 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
 //                        .weight(1f)
                 ) {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.location),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.my_location),
                         contentDescription = "Locate Me",
                         modifier = Modifier
                             .padding(start = 8.dp, end = 4.dp)
@@ -364,4 +366,57 @@ fun SearchItems(modifier: Modifier = Modifier) {
         }
     }
 
+}
+
+//@Preview(showBackground = true)
+@Composable
+fun Locations(modifier: Modifier = Modifier) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        items(2) {index ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(color = Color(0x12000000))
+
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 16.dp)
+                ) {
+                    Text(
+                        text = "Dwarahat",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W400,
+                        modifier = Modifier
+
+                    )
+                    Text(
+                        text = "20°/12°",
+                        fontSize = 12.sp,
+                        color = Color.Black.copy(0.5f),
+                        modifier = Modifier
+                    )
+                }
+
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.rain),
+                    contentDescription = "Add?",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp)
+                        .size(32.dp)
+                )
+
+            }
+        }
+    }
 }
