@@ -27,7 +27,7 @@ fun NavGraph(
         composable(
             route = Screens.ManageLocations.name
         ) {
-            ManageLocations()
+            ManageLocations(viewModel)
         }
     }
 }

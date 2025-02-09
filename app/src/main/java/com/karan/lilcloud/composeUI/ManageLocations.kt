@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Text
@@ -50,12 +51,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.karan.lilcloud.viewModel.WeatherViewModel
 
 
-@Preview(showBackground = true, showSystemUi = false)
+//@Preview(showBackground = true, showSystemUi = false)
 @Composable
-fun ManageLocations() {
+fun ManageLocations(viewModel : WeatherViewModel) {
     var isExpended = remember { mutableStateOf(false) }
+
+    if (viewModel.showDialog.value) {
+        EnableLocationDialog(
+            { viewModel.showLocationSettings() },
+            { viewModel.showDialog.value = false }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -419,4 +428,37 @@ fun Locations(modifier: Modifier = Modifier) {
             }
         }
     }
+}
+
+@Composable
+fun EnableLocationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = {
+            Text(text = "Location Services")
+        },
+        text = {
+            Text(text = "Location services are required to show weather, please enable them.")
+        },
+        confirmButton = {
+            Text(
+                text = "Go to Settings",
+                color = Color.Blue,
+                modifier = Modifier
+                    .clickable(enabled = true, onClick = { onConfirm() })
+            )
+        },
+        dismissButton = {
+            Text(
+                text = "Cancel",
+                color = Color.Blue,
+                modifier = Modifier
+                    .clickable(enabled = true, onClick = { onDismiss() })
+                    .padding(end = 36.dp)
+            )
+        },
+    )
 }

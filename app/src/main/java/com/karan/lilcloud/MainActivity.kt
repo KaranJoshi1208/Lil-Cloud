@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 Toast.makeText(this@MainActivity, "Location Permission Granted 👍💦", Toast.LENGTH_SHORT).show()
-//                viewModel.loadCurrentWeather()
+                viewModel.loadCurrentWeather()
             } else {
                 viewModel.permissionDenied = true
                 Toast.makeText(
@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
                     "Location Permission not Granted 💀❌",
                     Toast.LENGTH_SHORT
                 ).show()
+                viewModel.loadCurrentWeather()
             }
         }
 
@@ -58,28 +59,21 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = Color.Transparent.toArgb()
         window.navigationBarColor = Color.Transparent.toArgb()
 
-//        needPermission()
-        viewModel.loadCurrentWeather {
-            needPermission()
-        }
 
         setContent {
             LilCloudTheme {
+                needPermission()
                 navController = rememberNavController()
                 NavGraph(viewModel, navController)
-//                WeatherScreen(viewModel)
             }
         }
     }
 
     private fun needPermission() {
-//        if (!viewModel.isLocationEnabled()) {
-//            viewModel.showDialog.value = true
-//        }
         if (ActivityCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
@@ -89,15 +83,8 @@ class MainActivity : ComponentActivity() {
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
-//        viewModel.showLoading.value = true                             /// here I am , fuckin around !!
-//        Log.d("HowsTheWeather", "Loading Screen : ${viewModel.showLoading.value}")
-
+        else {
+            viewModel.loadCurrentWeather()
+        }
     }
-
-//    override fun onResume() {
-//        super.onResume()
-//        if(viewModel.currentCondition.value == null && !viewModel.showLoading.value) {
-//            getGeoLocation()
-//        }
-//    }
 }

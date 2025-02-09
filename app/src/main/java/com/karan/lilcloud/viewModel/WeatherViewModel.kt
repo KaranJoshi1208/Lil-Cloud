@@ -8,10 +8,12 @@ import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -30,7 +32,9 @@ import com.karan.lilcloud.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
@@ -45,6 +49,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     val dispatcher = Dispatchers.IO
+
+//    val navController = NavController(application)
 
 
     // Helper variables
@@ -72,6 +78,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     // Control variables
     var showDialog = mutableStateOf<Boolean>(false)
     var showLoading = mutableStateOf<Boolean>(false)
+    var navIt = mutableStateOf<Boolean>(false)
 
 
     // API responses
@@ -83,17 +90,23 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
-    fun loadCurrentWeather(checkPermission: () -> Unit) {
+    fun loadCurrentWeather() {
 
         if (data.value.isEmpty()) {
 
             // Check For Required Permissions
-            checkPermission()
+//            runBlocking {
+//                checkPermission()
+//            }
             if (!isLocationEnabled()) {
                 showDialog.value = true
             }
 
-            // If Permissions Granted , make API calls
+            // If Permissions Granted ,
+            //
+            // make API calls
+
+
             if (!permissionDenied && isLocationEnabled()) {
 
                 val weather = WeatherData(isCurrentLocation = true)
@@ -107,12 +120,12 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     }
                 }
             } else {
-                TODO("Direct user to the 'MANAGE LOCATIONS' screen , to select a location")
+                navIt.value = true
             }
             return
         }
 
-        TODO("Check if the 'data' is outdated ?")
+//        TODO("Check if the 'data' is outdated ?")
     }
 
 
@@ -169,12 +182,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         try {
             response = repo.getCurrentCondition(locationKey)
             currentCondition.value = response[0]
-
-            // caching
-//            val json = gson.toJson(currentCondition.value)
-//            val cacheFile = File(applicationContext.cacheDir, "current_condition.json")
-//            cacheFile.writeText(json)
-
             Log.d("HowsTheWeather", currentCondition.value.toString())
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching CurrentCondition", e)
@@ -189,12 +196,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 dailyForecast.value = it
                 response = it
             }
-
-            //caching
-//            val json = gson.toJson(dailyForecast.value)
-//            val cacheFile = File(applicationContext.cacheDir, "daily_forecast.json")
-//            cacheFile.writeText(json)
-
             Log.d("HowsTheWeather", dailyForecast.value.toString())
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching DailyForecast", e)
@@ -208,13 +209,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         var response : HalfDayForecastResponse? = null
         try {
             halfDayForecast.addAll(repo.getHalfDayForecast(locationKey).also{ response = it})
-
-            // caching
-//            val json = gson.toJson(halfDayForecast)
-//            val cacheFile = File(applicationContext.cacheDir, "half_day.json")
-//            cacheFile.writeText(json)
-
-            Log.d("HowsTheWeather", "Completed ✔️")
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error fetching Half Day Forecast", e)
         }
@@ -229,11 +223,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 quinForecastResponse.value = it
                 response = it
             }
-
-            // caching
-//            val json = gson.toJson(quinForecastResponse.value)
-//            val cacheFile = File(applicationContext.cacheDir, "quin_forecast.json")
-//            cacheFile.writeText(json)
         } catch (e: Exception) {
             Log.e("HowsTheWeather", "Error Fetching 5-days Forecast", e)
         }

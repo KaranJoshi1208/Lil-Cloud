@@ -27,6 +27,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -67,12 +68,12 @@ fun WeatherScreen(
         pageCount.value
     }
 
-    if (viewModel.showDialog.value) {
-        EnableLocationDialog(
-            { viewModel.showLocationSettings() },
-            { viewModel.showDialog.value = false }
-        )
+    LaunchedEffect(viewModel.navIt.value) {
+        if(viewModel.navIt.value) {
+            navController.navigate(route = Screens.ManageLocations.name)
+        }
     }
+
 
     Box(
         modifier = Modifier
@@ -359,38 +360,6 @@ fun WeatherDetails(viewModel: WeatherViewModel, weather : WeatherData, modifier:
     }
 }
 
-@Composable
-fun EnableLocationDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = {
-            Text(text = "Location Services")
-        },
-        text = {
-            Text(text = "Location services are required to show weather, please enable them.")
-        },
-        confirmButton = {
-            Text(
-                text = "Go to Settings",
-                color = Color.Blue,
-                modifier = Modifier
-                    .clickable(enabled = true, onClick = { onConfirm() })
-            )
-        },
-        dismissButton = {
-            Text(
-                text = "Cancel",
-                color = Color.Blue,
-                modifier = Modifier
-                    .clickable(enabled = true, onClick = { onDismiss() })
-                    .padding(end = 36.dp)
-            )
-        },
-    )
-}
 
 
 @Composable
