@@ -26,6 +26,7 @@ import com.karan.lilcloud.model.accuWeather.DailyForecastResponse
 import com.karan.lilcloud.model.accuWeather.GeoPositionResponse
 import com.karan.lilcloud.model.accuWeather.HalfDayForecastResponse
 import com.karan.lilcloud.model.accuWeather.QuinForecastResponse
+import com.karan.lilcloud.model.accuWeather.SearchResponse
 import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.model.room.WeatherDataBase
 import com.karan.lilcloud.repository.WeatherRepository
@@ -88,6 +89,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var dailyForecast = mutableStateOf<DailyForecastResponse?>(null)
     var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem?>()
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
+
+
+    var searchResponse = mutableStateListOf<SearchResponse.SearchResponseItem?>()
 
 
     fun loadCurrentWeather() {
@@ -158,6 +162,20 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             } finally {
                 showLoading.value = false
                 Log.d("HowsTheWeather", "Loading Screen : ${showLoading.value}")
+            }
+        }
+    }
+
+    fun searchLocation(query : String) {
+        viewModelScope.launch(dispatcher) {
+            try {
+                searchResponse.apply {
+                    clear()
+                    addAll(repo.getSearchResponse(query))
+                }
+            }
+            catch (e : Exception) {
+                Log.e("HowsTheWeather", "Error Fetching Search Results", e)
             }
         }
     }
@@ -314,7 +332,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val time = Calendar.getInstance().let {
             it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE)
         }
-        val progress: Int = ((time - rise) / (set - rise) * 32).absoluteValue
+        val progress: Int = ((time - rise).toFloat() / (set - rise) * 32).toInt()
 
         Log.d("HowsTheWeather", "Inside Regex Progress : $progress")
 

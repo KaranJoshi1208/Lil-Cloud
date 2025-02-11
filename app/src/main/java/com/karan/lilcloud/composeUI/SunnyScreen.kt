@@ -254,7 +254,7 @@ fun WeatherDetails(viewModel: WeatherViewModel, weather : WeatherData, modifier:
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = viewModel.whichWeatherIcon(viewModel.currentCondition.value?.weatherIcon ?: 0)),
+                        painter = painterResource(id = viewModel.whichWeatherIcon(cc.weatherIcon ?: 0)),
                         contentDescription = "Weather Icon",
                         modifier = Modifier
                             .size(128.dp)

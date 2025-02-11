@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -51,12 +53,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.karan.lilcloud.viewModel.WeatherViewModel
 
 
 //@Preview(showBackground = true, showSystemUi = false)
 @Composable
-fun ManageLocations(viewModel : WeatherViewModel) {
+fun ManageLocations(viewModel: WeatherViewModel) {
     var isExpended = remember { mutableStateOf(false) }
 
     if (viewModel.showDialog.value) {
@@ -101,23 +104,32 @@ fun ManageLocations(viewModel : WeatherViewModel) {
             )
         }
 
-        SearchBar(isExpended, Modifier.padding(horizontal = 12.dp))
+        SearchBar(viewModel, isExpended, Modifier.padding(horizontal = 12.dp))
         TopCities(isExpended)
-        Locations()
+        Locations(viewModel)
 
     }
 
 }
 
 @Composable
-fun SearchBar(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) {
+fun SearchBar(
+    viewModel: WeatherViewModel,
+    isExpended: MutableState<Boolean>,
+    modifier: Modifier = Modifier
+) {
     val query = remember { mutableStateOf("") }
     val isFocused = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
     TextField(
         value = query.value,
-        onValueChange = {query.value = it},
+        onValueChange = {
+            query.value = it
+            if(query.value.length > 3) {
+//                viewModel.searchLocation(query.value)                         // enable this , to use search function
+            }
+        },
         shape = RoundedCornerShape(32.dp),
         leadingIcon = {
             Image(
@@ -129,7 +141,7 @@ fun SearchBar(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
             )
         },
         trailingIcon = {
-            if(isFocused.value) {
+            if (isFocused.value) {
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.close),
                     contentDescription = "Search ?",
@@ -170,7 +182,7 @@ fun SearchBar(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
                 isFocused.value = it.isFocused
             }
     )
-    if(isFocused.value) SearchItems()
+    if (isFocused.value) SearchItems(viewModel)
 
 }
 
@@ -188,9 +200,9 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
                     easing = FastOutSlowInEasing
                 )
             )
-            .clickable(true) {
-                isExpended.value = !isExpended.value
-            }
+//            .clickable(true) {
+//                isExpended.value = !isExpended.value
+//            }
     ) {
         Column {
             Row(
@@ -264,7 +276,7 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
 
             }
 
-            if(isExpended.value) {
+            if (isExpended.value) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
@@ -272,10 +284,10 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
                         .fillMaxWidth()
                 ) {
                     City("Haldwani")
-                    City("Bageshwar")
+                    City("Delhi")
                     City("Rishikesh")
                     City("Haridwar")
-                    City("Mussoorie")
+                    City("Dwarka")
                 }
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -307,7 +319,7 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
 }
 
 @Composable
-fun City(city : String, modifier : Modifier = Modifier) {
+fun City(city: String, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -327,7 +339,9 @@ fun City(city : String, modifier : Modifier = Modifier) {
 }
 
 @Composable
-fun SearchItems(modifier: Modifier = Modifier) {
+fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
+
+    val result = viewModel.searchResponse
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -336,7 +350,8 @@ fun SearchItems(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
     ) {
-        items(1) {index ->
+        items(result.size) { index ->
+            val temp = result[index]
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -349,14 +364,14 @@ fun SearchItems(modifier: Modifier = Modifier) {
                         .align(Alignment.CenterStart)
                 ) {
                     Text(
-                        text = "Dwarahat",
+                        text = temp?.localizedName.toString(),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W300,
                         modifier = Modifier
 
                     )
                     Text(
-                        text = "UP, India",
+                        text = "${temp?.administrativeArea?.localizedName}, ${temp?.country?.localizedName}",
                         fontSize = 12.sp,
                         color = Color.Black.copy(0.5f),
                         modifier = Modifier
@@ -370,7 +385,6 @@ fun SearchItems(modifier: Modifier = Modifier) {
                         .align(Alignment.CenterEnd)
                         .size(32.dp)
                 )
-
             }
         }
     }
@@ -379,14 +393,16 @@ fun SearchItems(modifier: Modifier = Modifier) {
 
 //@Preview(showBackground = true)
 @Composable
-fun Locations(modifier: Modifier = Modifier) {
+fun Locations(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
+    val data = viewModel.data.collectAsState().value
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        items(2) {index ->
+        items(data.size) { index ->
+            val temp = data[index]
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -402,14 +418,14 @@ fun Locations(modifier: Modifier = Modifier) {
                         .padding(start = 16.dp)
                 ) {
                     Text(
-                        text = "Dwarahat",
+                        text = temp.geoLocation?.localizedName.toString(),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W400,
                         modifier = Modifier
 
                     )
                     Text(
-                        text = "20°/12°",
+                        text = "${temp.currentCondition?.temperatureSummary?.past6HourRange?.maximum?.metric?.value}°/${temp.currentCondition?.temperatureSummary?.past6HourRange?.minimum?.metric?.value}°",
                         fontSize = 12.sp,
                         color = Color.Black.copy(0.5f),
                         modifier = Modifier
@@ -417,7 +433,11 @@ fun Locations(modifier: Modifier = Modifier) {
                 }
 
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.rain),
+                    imageVector = ImageVector.vectorResource(
+                        id = viewModel.whichWeatherIcon(
+                            temp.currentCondition?.weatherIcon ?: 0
+                        )
+                    ),
                     contentDescription = "Add?",
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
