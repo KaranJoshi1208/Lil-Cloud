@@ -8,12 +8,10 @@ import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -33,13 +31,10 @@ import com.karan.lilcloud.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.absoluteValue
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -118,7 +113,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 getCoordinates { coordinates ->
                     if (coordinates != null) {
 //                        weather.locationKey = "${coordinates.first},${coordinates.second}"
-                        refreshCurrentLocation("${coordinates.first},${coordinates.second}", weather)
+                        addCurrentLocation("${coordinates.first},${coordinates.second}", weather)
                     } else {
                         Log.e("HowsTheWeather", "Failed to retrieve coordinates.")
                     }
@@ -133,7 +128,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
 
-    fun refreshCurrentLocation(geoPosition: String, weather : WeatherData) {
+    fun addCurrentLocation(geoPosition: String, weather : WeatherData) {
         showLoading.value = true
         viewModelScope.launch(dispatcher) {
             try {
@@ -164,6 +159,47 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 Log.d("HowsTheWeather", "Loading Screen : ${showLoading.value}")
             }
         }
+    }
+
+    fun load(weather : WeatherData) {
+//        showLoading.value = true
+        viewModelScope.launch(dispatcher) {
+            try {
+                weather.locationKey.also { key ->
+                    val cc = async { getCurrentCondition(key) }
+                    val df = async { getDailyForecast(key) }
+                    val hdf = async { getHalfDayForecast(key) }
+                    val qf = async { getQuinForecast(key) }
+
+                    weather.apply {
+                        locationKey = key
+                        geoLocation = this@WeatherViewModel.geoLocation.value
+                        currentCondition = cc.await()
+                        dailyForecast = df.await()
+                        halfDayForecast = hdf.await()
+                        quinForecastResponse = qf.await()
+                    }
+
+                    repo.insertWeatherData(weather)
+
+                } ?: Log.d("HowsTheWeather", "Location Response is NULL")
+
+            } catch (e: Exception) {
+                Log.e("HowsTheWeather", "Error fetching geoLocation", e)
+            } finally {
+//                showLoading.value = false
+                Log.d("HowsTheWeather", "Loading Screen : ${showLoading.value}")
+            }
+        }
+    }
+
+
+    fun addLocation(key : String?) : Boolean{
+        // this function believes that this is not a duplicate call for same location
+        key?.let {
+            load(WeatherData(locationKey = key))
+        } ?: return false
+        return true
     }
 
     fun searchLocation(query : String) {

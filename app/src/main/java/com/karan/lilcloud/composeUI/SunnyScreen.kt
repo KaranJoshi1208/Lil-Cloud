@@ -64,7 +64,7 @@ fun WeatherScreen(
     val scrollState = rememberScrollState(0)
     val pageCount = remember { derivedStateOf { data.size } }
     val pagerState = rememberPagerState {                                  // watch out, potential bug 🚩
-        Log.d("HowsTheWeather", "PagerState value : ${data.size}")
+//        Log.d("HowsTheWeather", "PagerState value : ${data.size}")
         pageCount.value
     }
 
