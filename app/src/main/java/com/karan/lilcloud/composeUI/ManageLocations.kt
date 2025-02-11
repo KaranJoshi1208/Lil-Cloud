@@ -127,7 +127,7 @@ fun SearchBar(
         onValueChange = {
             query.value = it
             if(query.value.length > 3) {
-//                viewModel.searchLocation(query.value)                         // enable this , to use search function
+                viewModel.searchLocation(query.value)                         // enable this , to use search function
             }
         },
         shape = RoundedCornerShape(32.dp),
@@ -378,12 +378,16 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                     )
                 }
 
+                val isDone = remember { mutableStateOf(false) }
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.add),
+                    imageVector = ImageVector.vectorResource(id = if(!isDone.value) R.drawable.add else R.drawable.check),
                     contentDescription = "Add?",
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .size(32.dp)
+                        .clickable(true) {
+                            viewModel.addLocation(temp?.key)
+                        }
                 )
             }
         }
