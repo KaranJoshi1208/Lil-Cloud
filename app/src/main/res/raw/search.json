@@ -1,0 +1,152 @@
+[
+  {
+    "Version": 1,
+    "Key": "317083",
+    "Type": "City",
+    "Rank": 31,
+    "LocalizedName": "Balikesir",
+    "Country": {
+      "ID": "TR",
+      "LocalizedName": "Türkiye"
+    },
+    "AdministrativeArea": {
+      "ID": "10",
+      "LocalizedName": "Balıkesir"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "203752",
+    "Type": "City",
+    "Rank": 35,
+    "LocalizedName": "Balikpapan",
+    "Country": {
+      "ID": "ID",
+      "LocalizedName": "Indonesia"
+    },
+    "AdministrativeArea": {
+      "ID": "KI",
+      "LocalizedName": "East Kalimantan"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "57453",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Balizhuang Subdistrict",
+    "Country": {
+      "ID": "CN",
+      "LocalizedName": "China"
+    },
+    "AdministrativeArea": {
+      "ID": "BJ",
+      "LocalizedName": "Beijing"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "2582614",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Balizhuang Subdistrict",
+    "Country": {
+      "ID": "CN",
+      "LocalizedName": "China"
+    },
+    "AdministrativeArea": {
+      "ID": "BJ",
+      "LocalizedName": "Beijing"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "3431389",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Balikpapan Barat",
+    "Country": {
+      "ID": "ID",
+      "LocalizedName": "Indonesia"
+    },
+    "AdministrativeArea": {
+      "ID": "KI",
+      "LocalizedName": "East Kalimantan"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "3431390",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Balikpapan Kota",
+    "Country": {
+      "ID": "ID",
+      "LocalizedName": "Indonesia"
+    },
+    "AdministrativeArea": {
+      "ID": "KI",
+      "LocalizedName": "East Kalimantan"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "3431627",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Balikpapan Selatan",
+    "Country": {
+      "ID": "ID",
+      "LocalizedName": "Indonesia"
+    },
+    "AdministrativeArea": {
+      "ID": "KI",
+      "LocalizedName": "East Kalimantan"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "3431391",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Balikpapan Tengah",
+    "Country": {
+      "ID": "ID",
+      "LocalizedName": "Indonesia"
+    },
+    "AdministrativeArea": {
+      "ID": "KI",
+      "LocalizedName": "East Kalimantan"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "3431628",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Balikpapan Utara",
+    "Country": {
+      "ID": "ID",
+      "LocalizedName": "Indonesia"
+    },
+    "AdministrativeArea": {
+      "ID": "KI",
+      "LocalizedName": "East Kalimantan"
+    }
+  },
+  {
+    "Version": 1,
+    "Key": "262442",
+    "Type": "City",
+    "Rank": 45,
+    "LocalizedName": "Baliuag",
+    "Country": {
+      "ID": "PH",
+      "LocalizedName": "Philippines"
+    },
+    "AdministrativeArea": {
+      "ID": "BUL",
+      "LocalizedName": "Bulacan"
+    }
+  }
+]
