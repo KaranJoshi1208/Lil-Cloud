@@ -61,6 +61,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var permissionDenied: Boolean = false
 
     var data = MutableStateFlow<List<WeatherData>>(emptyList())
+    var searchResponse = mutableStateListOf<SearchResponse.SearchResponseItem?>()
+
 
     init {
         viewModelScope.launch(dispatcher) {
@@ -69,6 +71,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 Log.d("HowsTheWeather", "database of size : ${data.value.size}")
             }
         }
+
+        // reducing API calls , since I am using a free API
+        searchResponse.addAll(gson.fromJson(application.resources.openRawResource(R.raw.search).bufferedReader().use { it.readText() }, Array<SearchResponse.SearchResponseItem?>::class.java))
+
     }
 
     // Control variables
@@ -86,7 +92,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
-    var searchResponse = mutableStateListOf<SearchResponse.SearchResponseItem?>()
 
 
     fun loadCurrentWeather() {

@@ -24,9 +24,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.TextFieldDefaults
@@ -45,6 +47,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +64,7 @@ import com.karan.lilcloud.viewModel.WeatherViewModel
 @Composable
 fun ManageLocations(viewModel: WeatherViewModel) {
     var isExpended = remember { mutableStateOf(false) }
+//    var scrollState = rememberScrollState(0)
 
     if (viewModel.showDialog.value) {
         EnableLocationDialog(
@@ -69,6 +73,7 @@ fun ManageLocations(viewModel: WeatherViewModel) {
         )
     }
 
+    // Parent column
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,6 +82,7 @@ fun ManageLocations(viewModel: WeatherViewModel) {
                     .asPaddingValues()
                     .calculateTopPadding()
             )
+//            .verticalScroll(scrollState)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -126,8 +132,8 @@ fun SearchBar(
         value = query.value,
         onValueChange = {
             query.value = it
-            if(query.value.length > 3) {
-                viewModel.searchLocation(query.value)                         // enable this , to use search function
+            if (query.value.length > 3) {
+//                viewModel.searchLocation(query.value)                         // enable this , to use search function
             }
         },
         shape = RoundedCornerShape(32.dp),
@@ -344,11 +350,11 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
     val result = viewModel.searchResponse
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 16.dp)
     ) {
         items(result.size) { index ->
             val temp = result[index]
@@ -359,13 +365,12 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
 
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                 ) {
                     Text(
                         text = temp?.localizedName.toString(),
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.W300,
                         modifier = Modifier
 
@@ -378,9 +383,9 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                     )
                 }
 
-                val isDone = remember { mutableStateOf(false) }
+                val isDone = remember { mutableStateOf(false) } // need to check if this location is already added or not
                 Image(
-                    imageVector = ImageVector.vectorResource(id = if(!isDone.value) R.drawable.add else R.drawable.check),
+                    imageVector = ImageVector.vectorResource(id = if (!isDone.value) R.drawable.add else R.drawable.check),
                     contentDescription = "Add?",
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -410,13 +415,13 @@ fun Locations(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp)
+                    .height(76.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(color = Color(0x12000000))
 
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .padding(start = 16.dp)
@@ -437,7 +442,7 @@ fun Locations(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                 }
 
                 Image(
-                    imageVector = ImageVector.vectorResource(
+                    painter = painterResource(
                         id = viewModel.whichWeatherIcon(
                             temp.currentCondition?.weatherIcon ?: 0
                         )
