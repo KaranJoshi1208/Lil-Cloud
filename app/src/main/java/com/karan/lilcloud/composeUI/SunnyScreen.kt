@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -62,10 +63,10 @@ fun WeatherScreen(
 ) {
     val data = viewModel.data.collectAsState().value
     val scrollState = rememberScrollState(0)
-    val pageCount = remember { derivedStateOf { data.size } }
+    val pageCount = remember(data.size) { PagerState { data.size } }
     val pagerState = rememberPagerState {                                  // watch out, potential bug 🚩
 //        Log.d("HowsTheWeather", "PagerState value : ${data.size}")
-        pageCount.value
+        pageCount.pageCount
     }
 
     LaunchedEffect(viewModel.navIt.value) {
@@ -89,6 +90,8 @@ fun WeatherScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+//                .verticalScroll(scrollState)
+            ,
         ) {
 
             Row(
@@ -111,25 +114,31 @@ fun WeatherScreen(
             }
 
             // Implement Horizontal pager
-
             HorizontalPagerIndicator(
                 pagerState = pagerState,
-                pageCount = pageCount.value,
+                pageCount = pageCount.pageCount,
+                activeColor = Color.White,
+                inactiveColor = Color.White.copy(alpha = 0.5f),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(12.dp)
             )
 
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = true,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-            ) { page ->
-                WeatherInfo(viewModel, data[page], scrollState)
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = true,
+
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) { page ->
+                    WeatherInfo(viewModel, data[page], scrollState)
+                }
             }
-
-
 
 //            viewModel.data.value?.let {
 //                WeatherInfo(viewModel, scrollState)
@@ -156,7 +165,7 @@ fun WeatherInfo(
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(top = 36.dp)
-            .verticalScroll(scrollState, enabled = true),
+        ,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
