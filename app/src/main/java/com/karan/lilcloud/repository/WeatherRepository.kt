@@ -33,6 +33,10 @@ class WeatherRepository (db : WeatherDataBase) {
         return accuAPI.getLocationInfo(geoPosition, API_KEY_ACCU)
     }
 
+    suspend fun getLocationKeyInfo(locationKey: String) : GeoPositionResponse {
+        return accuAPI.getLocationKeyInfo(locationKey, API_KEY_ACCU)
+    }
+
     suspend fun getDailyForecast(locationKey : String) : DailyForecastResponse {
         return accuAPI.getDailyForecast(locationKey, API_KEY_ACCU)
     }

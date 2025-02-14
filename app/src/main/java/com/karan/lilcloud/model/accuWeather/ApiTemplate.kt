@@ -18,6 +18,13 @@ interface ApiTemplate {
     ) : GeoPositionResponse
 
 
+    @GET("/locations/v1/{locationKey}")
+    suspend fun getLocationKeyInfo(
+        @Path("locationKey") locationKey : String,
+        @Query("apikey") apiKey : String,
+    ) : GeoPositionResponse
+
+
     /**
      * suspend GET function to fetch the current Weather condition in provided Location.
      * @param locationKey Unique Location ID, retrieved using `getLocationInfo()`

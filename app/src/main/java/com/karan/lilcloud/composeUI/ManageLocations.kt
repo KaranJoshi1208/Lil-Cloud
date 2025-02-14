@@ -133,7 +133,7 @@ fun SearchBar(
         onValueChange = {
             query.value = it
             if (query.value.length > 3) {
-//                viewModel.searchLocation(query.value)                         // enable this , to use search function
+                viewModel.searchLocation(query.value)                         // enable this , to use search function
             }
         },
         shape = RoundedCornerShape(32.dp),
