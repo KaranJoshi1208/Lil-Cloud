@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -86,11 +89,31 @@ fun WeatherScreen(
             )
             .then(modifier),
     ) {
+        var dragOffset = remember { mutableStateOf(0f) }
+        val refreshThreshold = 150f
+        var isRefreshing = false
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-//                .verticalScroll(scrollState)
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures(
+                        onVerticalDrag =  { _, dragAmount ->
+                            if(dragAmount > 0) {
+                                dragOffset.value += dragAmount
+                            }
+
+                        },
+
+                        onDragStart = {
+                            if(dragOffset.value > refreshThreshold && !isRefreshing) {
+                                // TODO("Refresh the WeatherData")
+                            }
+                            // reset the drag counter
+                            dragOffset.value = 0f
+                        }
+                    )
+                }
             ,
         ) {
 
@@ -221,7 +244,7 @@ fun WeatherInfo(
 
         WeatherDetails(viewModel, weather, Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp))
 //        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
-        TemperatureGraph(viewModel, weather, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
+        TemperatureGraph(viewModel, weather, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp, end = 8.dp))
         QuinForecast(viewModel, weather, Modifier.padding(16.dp))
         Twilight(viewModel, weather, Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp))
     }
