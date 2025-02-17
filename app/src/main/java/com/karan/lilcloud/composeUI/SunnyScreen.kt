@@ -89,7 +89,8 @@ fun WeatherScreen(
                     colors = listOf(Color(0xFF152FB2), Color(0xFF03A9F4))
                 )
             )
-            .then(modifier),
+            .then(modifier)
+        ,
     ) {
         var dragOffset = remember { mutableFloatStateOf(0f) }
         val refreshThreshold = 150f
@@ -98,28 +99,7 @@ fun WeatherScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectVerticalDragGestures(
-                        onVerticalDrag = { _, dragAmount ->
-                            if (dragAmount > 0) {
-                                dragOffset.floatValue += dragAmount
-                            }
 
-                        },
-                        onDragStart = { offset ->
-                            viewModel.showLoading.value = true
-                        },
-                        onDragEnd = {
-                            if (dragOffset.floatValue > refreshThreshold && !isRefreshing) {
-                                // TODO("Refresh the WeatherData")
-                                Log.d("HowsTheWeather", "Loading triggered 🔃")
-                            }
-                            // reset the drag counter
-                            dragOffset.floatValue = 0f
-                            viewModel.showLoading.value = false    // BUG : instant disappearance of text
-                        }
-                    )
-                }
             ,
         ) {
 
@@ -139,15 +119,37 @@ fun WeatherScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
+                    .pointerInput(Unit) {
+                        detectVerticalDragGestures(
+                            onVerticalDrag = { _, dragAmount ->
+                                if (dragAmount > 0) {
+                                    dragOffset.floatValue += dragAmount
+                                }
+
+                            },
+                            onDragStart = { offset ->
+                                viewModel.showLoading.value = true
+                            },
+                            onDragEnd = {
+                                if (dragOffset.floatValue > refreshThreshold && !isRefreshing) {
+                                    // TODO("Refresh the WeatherData")
+                                    Log.d("HowsTheWeather", "Loading triggered 🔃")
+                                }
+                                // reset the drag counter
+                                dragOffset.floatValue = 0f
+                                viewModel.showLoading.value = false    // BUG : instant disappearance of text
+                            }
+                        )
+                    }
                 ,
             ) {
                 HorizontalPager(
                     state = pagerState,
                     userScrollEnabled = true,
-
                     modifier = Modifier
                         .fillMaxWidth()
+                        .verticalScroll(scrollState)
+                    ,
                 ) { page ->
                     WeatherInfo(viewModel, data[page], scrollState)
                 }
