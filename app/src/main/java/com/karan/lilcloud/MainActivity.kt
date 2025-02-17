@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 Toast.makeText(this@MainActivity, "Location Permission Granted 👍💦", Toast.LENGTH_SHORT).show()
-                viewModel.loadCurrentWeather()
+                viewModel.loadCurrentWeather()  // 2
             } else {
                 viewModel.permissionDenied = true
                 Toast.makeText(
@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                     "Location Permission not Granted 💀❌",
                     Toast.LENGTH_SHORT
                 ).show()
-                viewModel.loadCurrentWeather()
+                viewModel.loadCurrentWeather()    // 3
             }
         }
 
@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
             )
         }
         else {
-            viewModel.loadCurrentWeather()
+            viewModel.loadCurrentWeather()   // 1
         }
     }
 }

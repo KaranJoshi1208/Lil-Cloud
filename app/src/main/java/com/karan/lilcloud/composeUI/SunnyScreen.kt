@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.karan.lilcloud.model.room.WeatherData
@@ -89,7 +91,7 @@ fun WeatherScreen(
             )
             .then(modifier),
     ) {
-        var dragOffset = remember { mutableStateOf(0f) }
+        var dragOffset = remember { mutableFloatStateOf(0f) }
         val refreshThreshold = 150f
         var isRefreshing = false
 
@@ -98,43 +100,30 @@ fun WeatherScreen(
                 .fillMaxSize()
                 .pointerInput(Unit) {
                     detectVerticalDragGestures(
-                        onVerticalDrag =  { _, dragAmount ->
-                            if(dragAmount > 0) {
-                                dragOffset.value += dragAmount
+                        onVerticalDrag = { _, dragAmount ->
+                            if (dragAmount > 0) {
+                                dragOffset.floatValue += dragAmount
                             }
 
                         },
-
-                        onDragStart = {
-                            if(dragOffset.value > refreshThreshold && !isRefreshing) {
+                        onDragStart = { offset ->
+                            viewModel.showLoading.value = true
+                        },
+                        onDragEnd = {
+                            if (dragOffset.floatValue > refreshThreshold && !isRefreshing) {
                                 // TODO("Refresh the WeatherData")
+                                Log.d("HowsTheWeather", "Loading triggered 🔃")
                             }
                             // reset the drag counter
-                            dragOffset.value = 0f
+                            dragOffset.floatValue = 0f
+                            viewModel.showLoading.value = false    // BUG : instant disappearance of text
                         }
                     )
                 }
             ,
         ) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 64.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.menu),
-                    contentDescription = "Menu",
-                    modifier = Modifier
-                        .padding(start = 20.dp)
-                        .size(32.dp)
-                        .clickable(true) {
-                            navController.navigate(route = Screens.ManageLocations.name)
-                        }
-                    ,
-                )
-            }
+            NavBar(viewModel, navController, Modifier.padding(top = 64.dp))
 
             // Implement Horizontal pager
             HorizontalPagerIndicator(
@@ -151,6 +140,7 @@ fun WeatherScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
+                ,
             ) {
                 HorizontalPager(
                     state = pagerState,
@@ -170,6 +160,42 @@ fun WeatherScreen(
 
         }
     }
+}
+
+@Composable
+fun NavBar( viewModel: WeatherViewModel, navController: NavController, modifier: Modifier = Modifier) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+        ,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            imageVector = ImageVector.vectorResource(id = R.drawable.menu),
+            contentDescription = "Menu",
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .size(32.dp)
+                .clickable(true) {
+                    navController.navigate(route = Screens.ManageLocations.name)
+                }
+            ,
+        )
+
+        if(viewModel.showLoading.value) {
+            Text(
+                text = "...Updating...",
+                fontSize = 12.sp,
+                color = Color(0x33FFFFFF),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+            )
+        }
+
+    }
+
 }
 
 @Composable
