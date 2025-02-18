@@ -42,16 +42,15 @@ import kotlin.math.sin
 @Composable
 fun Twilight(
     viewModel: WeatherViewModel,
-    weather : WeatherData,
-    modifier : Modifier,
+    weather: WeatherData,
+    modifier: Modifier,
 ) {
-    lateinit var data : Pair<Int, Pair<String, String>>
-
-    weather.dailyForecast?.let {
-        data = remember(it) { viewModel.getTwilight(it) }
+    val data: Pair<Int, Pair<String, String>> = weather.dailyForecast?.let {
+        remember(it) { viewModel.getTwilight(it) }
     } ?: return
 
     val progress = data.first
+
     Column(
         modifier = Modifier
             .then(modifier)
@@ -59,8 +58,7 @@ fun Twilight(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
-            ,
+                .height(180.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x12000000)
             )
@@ -68,11 +66,10 @@ fun Twilight(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                ,
+                    .fillMaxSize(),
 
-            ) {
-                var offset : Offset? = null
+                ) {
+                var offset: Offset? = null
 
                 Canvas(
                     modifier = Modifier
@@ -83,8 +80,8 @@ fun Twilight(
                     var start = -170f
                     var arcColor = Color.Yellow
 
-                    for(i in 0 until 32) {
-                        if(i != progress ) {
+                    for (i in 0 until 32) {
+                        if (i != progress) {
                             drawArc(
                                 color = arcColor,
                                 startAngle = start,
@@ -105,14 +102,13 @@ fun Twilight(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    val radian = ((170f - progress*5) - 1.25) * PI/180.0f
+                    val radian = ((170f - progress * 5) - 1.25) * PI / 180.0f
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.clear_day ),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.clear_day),
                         contentDescription = "Sun",
                         modifier = Modifier
                             .size(20.dp)
-                            .offset((182.5 + 125 * cos(radian)).dp, (140 - 125 * sin(radian)).dp)
-                        ,
+                            .offset((182.5 + 125 * cos(radian)).dp, (140 - 125 * sin(radian)).dp),
                     )
 
                     Column(
@@ -134,8 +130,16 @@ fun Twilight(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
                         ) {
-                            Text(text = "${data.second.first} \nSunrise", color = Color.White.copy(alpha = 0.4f), textAlign = TextAlign.Center)
-                            Text(text = "${data.second.second} \nSunset", color = Color.White.copy(alpha = 0.4f), textAlign = TextAlign.Center)
+                            Text(
+                                text = "${data.second.first} \nSunrise",
+                                color = Color.White.copy(alpha = 0.4f),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "${data.second.second} \nSunset",
+                                color = Color.White.copy(alpha = 0.4f),
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
                 }
