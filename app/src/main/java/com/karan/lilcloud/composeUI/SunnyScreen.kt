@@ -100,11 +100,8 @@ fun WeatherScreen(
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
 
                 if (dragOffset.floatValue > refreshThreshold && !isRefreshing) {
-                    viewModel.showLoading.value = true
                     Log.d("HowsTheWeather", "Loading triggered 🔃")
-
-                    // TODO("Refresh logic")
-
+//                    viewModel.refresh(data[pagerState.pageCount - 1])
                 }
                 return super.onPostFling(consumed, available)
             }
@@ -131,7 +128,6 @@ fun WeatherScreen(
             state = pagerState,
             userScrollEnabled = true,
             modifier = Modifier
-//                        .padding(top = 16.dp)
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) { page ->
