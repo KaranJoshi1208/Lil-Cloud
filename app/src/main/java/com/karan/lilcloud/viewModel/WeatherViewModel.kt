@@ -168,7 +168,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun load(weather: WeatherData) {
-//        showLoading.value = true
+        showLoading.value = true
         viewModelScope.launch(dispatcher) {
             try {
                 weather.locationKey.also { key ->
@@ -194,9 +194,29 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             } catch (e: Exception) {
                 Log.e("HowsTheWeather", "Error loading weather", e)
             } finally {
-//                showLoading.value = false
+                showLoading.value = false
                 Log.d("HowsTheWeather", "Loading Screen : ${showLoading.value}")
             }
+        }
+    }
+
+    fun refresh(weather: WeatherData) {
+
+        if(showLoading.value) return
+
+        if (weather.isCurrentLocation && isLocationEnabled()) {
+
+            getCoordinates { coordinates ->
+                if (coordinates != null) {
+//                        weather.locationKey = "${coordinates.first},${coordinates.second}"
+                    addCurrentLocation("${coordinates.first},${coordinates.second}", weather)
+                } else {
+                    Log.e("HowsTheWeather", "Failed to retrieve coordinates.(During Refresh)")
+                }
+
+            }
+        } else {
+            load(weather)
         }
     }
 
