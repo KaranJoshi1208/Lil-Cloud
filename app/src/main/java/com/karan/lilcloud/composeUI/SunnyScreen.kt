@@ -43,12 +43,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -69,13 +73,14 @@ fun WeatherScreen(
     val data = viewModel.data.collectAsState().value
     val scrollState = rememberScrollState(0)
     val pageCount = remember(data.size) { PagerState { data.size } }
-    val pagerState = rememberPagerState {                                  // watch out, potential bug 🚩
+    val pagerState =
+        rememberPagerState {                                  // watch out, potential bug 🚩
 //        Log.d("HowsTheWeather", "PagerState value : ${data.size}")
-        pageCount.pageCount
-    }
+            pageCount.pageCount
+        }
 
     LaunchedEffect(viewModel.navIt.value) {
-        if(viewModel.navIt.value) {
+        if (viewModel.navIt.value) {
             navController.navigate(route = Screens.ManageLocations.name)
         }
     }
@@ -83,8 +88,31 @@ fun WeatherScreen(
     val refreshThreshold = 150f
     var isRefreshing = false
 
+    val nestedScrollObj = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y > 0) {
+                    dragOffset.floatValue += available.y
+                }
+                return Offset.Zero
+            }
 
-    Box(
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+
+                if (dragOffset.floatValue > refreshThreshold && !isRefreshing) {
+                    viewModel.showLoading.value = true
+                    Log.d("HowsTheWeather", "Loading triggered 🔃")
+
+                    // TODO("Refresh logic")
+
+                }
+                return super.onPostFling(consumed, available)
+            }
+        }
+    }
+
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -92,121 +120,30 @@ fun WeatherScreen(
                     colors = listOf(Color(0xFF152FB2), Color(0xFF03A9F4))
                 )
             )
-            .pointerInput(Unit) {
-                detectVerticalDragGestures(
-                    onVerticalDrag = { _, dragAmount ->
-                        if (dragAmount > 0) {
-                            dragOffset.floatValue += dragAmount
-                        }
-                    },
-                    onDragStart = { offset ->
-                        viewModel.showLoading.value = true
-                    },
-                    onDragEnd = {
-                        if (dragOffset.floatValue > refreshThreshold && !isRefreshing) {
-                            // TODO("Refresh the WeatherData")
-                            Log.d("HowsTheWeather", "Loading triggered 🔃")
-                        }
-                        // reset the drag counter
-                        dragOffset.floatValue = 0f
-                        viewModel.showLoading.value = false    // BUG : instant disappearance of text
-                    }
-                )
-            }
-            .then(modifier)
-        ,
+            .nestedScroll(nestedScrollObj)
+            .then(modifier),
     ) {
 
+        // Implement Horizontal pager
+        NavBar(viewModel, pagerState, pageCount, navController, Modifier)
 
-        Column(
+        HorizontalPager(
+            state = pagerState,
+            userScrollEnabled = true,
             modifier = Modifier
-                .fillMaxSize()
-
-            ,
-        ) {
-
-            NavBar(viewModel, navController, Modifier.padding(top = 64.dp))
-
-            // Implement Horizontal pager
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                pageCount = pageCount.pageCount,
-                activeColor = Color.White,
-                inactiveColor = Color.White.copy(alpha = 0.5f),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(12.dp)
-            )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-
-                ,
-            ) {
-                HorizontalPager(
-                    state = pagerState,
-                    userScrollEnabled = true,
-                    modifier = Modifier
 //                        .padding(top = 16.dp)
-                        .fillMaxWidth()
-                        .verticalScroll(scrollState)
-                    ,
-                ) { page ->
-                    WeatherInfo(viewModel, data[page], scrollState)
-                }
-            }
-
-//            viewModel.data.value?.let {
-//                WeatherInfo(viewModel, scrollState)
-//            }
-//                ?: if (viewModel.showLoading.value) Loading() else {/* TODO("Screen to show select city manually")*/ }
-
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
+        ) { page ->
+            WeatherInfo(viewModel, data[page])
         }
     }
-}
-
-@Composable
-fun NavBar( viewModel: WeatherViewModel, navController: NavController, modifier: Modifier = Modifier) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier)
-        ,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.menu),
-            contentDescription = "Menu",
-            modifier = Modifier
-                .padding(start = 20.dp)
-                .size(32.dp)
-                .clickable(true) {
-                    navController.navigate(route = Screens.ManageLocations.name)
-                }
-            ,
-        )
-
-        if(viewModel.showLoading.value) {
-            Text(
-                text = "...Updating...",
-                fontSize = 12.sp,
-                color = Color(0x33FFFFFF),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f)
-            )
-        }
-
-    }
-
 }
 
 @Composable
 fun WeatherInfo(
     viewModel: WeatherViewModel,
-    weather : WeatherData,
-    scrollState: ScrollState,
+    weather: WeatherData,
 //    modifier: Modifier = Modifier
 ) {
 
@@ -217,8 +154,7 @@ fun WeatherInfo(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(top = 36.dp)
-        ,
+            .padding(top = 36.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
@@ -272,16 +208,32 @@ fun WeatherInfo(
             color = Color.White,
         )
 
-        WeatherDetails(viewModel, weather, Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp))
+        WeatherDetails(
+            viewModel,
+            weather,
+            Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp)
+        )
 //        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
-        TemperatureGraph(viewModel, weather, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp, end = 8.dp))
+        TemperatureGraph(
+            viewModel,
+            weather,
+            modifier = Modifier.padding(bottom = 16.dp, top = 16.dp, end = 8.dp)
+        )
         QuinForecast(viewModel, weather, Modifier.padding(16.dp))
-        Twilight(viewModel, weather, Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp))
+        Twilight(
+            viewModel,
+            weather,
+            Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp)
+        )
     }
 }
 
 @Composable
-fun WeatherDetails(viewModel: WeatherViewModel, weather : WeatherData, modifier: Modifier = Modifier) {
+fun WeatherDetails(
+    viewModel: WeatherViewModel,
+    weather: WeatherData,
+    modifier: Modifier = Modifier
+) {
     val cc = weather.currentCondition ?: return
 
     Column(
@@ -293,19 +245,17 @@ fun WeatherDetails(viewModel: WeatherViewModel, weather : WeatherData, modifier:
 
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-            ,
+                .fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = Color(0x12000000),
                 contentColor = Color.Unspecified,
-                ),
+            ),
         ) {
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                ,
+                    .height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
@@ -316,7 +266,11 @@ fun WeatherDetails(viewModel: WeatherViewModel, weather : WeatherData, modifier:
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = viewModel.whichWeatherIcon(cc.weatherIcon ?: 0)),
+                        painter = painterResource(
+                            id = viewModel.whichWeatherIcon(
+                                cc.weatherIcon ?: 0
+                            )
+                        ),
                         contentDescription = "Weather Icon",
                         modifier = Modifier
                             .size(128.dp)
@@ -421,7 +375,6 @@ fun WeatherDetails(viewModel: WeatherViewModel, weather : WeatherData, modifier:
         }
     }
 }
-
 
 
 @Composable
