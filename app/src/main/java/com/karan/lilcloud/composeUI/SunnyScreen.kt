@@ -85,13 +85,13 @@ fun WeatherScreen(
         }
     }
     var dragOffset = remember { mutableFloatStateOf(0f) }
-    val refreshThreshold = 150f
+    val refreshThreshold = 100f
     var isRefreshing = false
 
     val nestedScrollObj = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (available.y > 0) {
+                if (scrollState.value <= 0 && available.y > 0) {
                     dragOffset.floatValue += available.y
                 }
                 return Offset.Zero
@@ -103,6 +103,7 @@ fun WeatherScreen(
                     Log.d("HowsTheWeather", "Loading triggered 🔃")
 //                    viewModel.refresh(data[pagerState.pageCount - 1])
                 }
+                dragOffset.floatValue = 0f
                 return super.onPostFling(consumed, available)
             }
         }
@@ -118,6 +119,7 @@ fun WeatherScreen(
                 )
             )
             .nestedScroll(nestedScrollObj)
+            .verticalScroll(scrollState)
             .then(modifier),
     ) {
 
@@ -129,7 +131,6 @@ fun WeatherScreen(
             userScrollEnabled = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(scrollState)
         ) { page ->
             WeatherInfo(viewModel, data[page])
         }
