@@ -60,7 +60,7 @@ fun QuinForecast(
                 color = Color(0x40FFFFFF),
             )
 
-            data?.forEachIndexed { index, item ->
+            data.forEachIndexed { index, item ->
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

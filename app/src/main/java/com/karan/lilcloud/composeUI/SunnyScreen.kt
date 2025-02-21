@@ -101,7 +101,7 @@ fun WeatherScreen(
 
                 if (dragOffset.floatValue > refreshThreshold && !isRefreshing) {
                     Log.d("HowsTheWeather", "Loading triggered 🔃")
-//                    viewModel.refresh(data[pagerState.pageCount - 1])
+                    viewModel.refresh(data[pagerState.pageCount - 1])
                 }
                 dragOffset.floatValue = 0f
                 return super.onPostFling(consumed, available)

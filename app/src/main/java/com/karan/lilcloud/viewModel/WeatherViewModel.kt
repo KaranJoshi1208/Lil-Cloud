@@ -83,6 +83,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     // Control variables
     var showDialog = mutableStateOf<Boolean>(false)
     var showLoading = mutableStateOf<Boolean>(false)
+    var isSearching = false
     var navIt = mutableStateOf<Boolean>(false)
 
 
@@ -99,26 +100,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
         if (data.value.isEmpty()) {
 
-            // Check For Required Permissions
-//            runBlocking {
-//                checkPermission()
-//            }
             if (!isLocationEnabled()) {
                 showDialog.value = true
             }
 
-            // If Permissions Granted ,
-            //
-            // make API calls
-
-
             if (!permissionDenied && isLocationEnabled()) {
 
                 val weather = WeatherData(isCurrentLocation = true)
-
                 getCoordinates { coordinates ->
                     if (coordinates != null) {
-//                        weather.locationKey = "${coordinates.first},${coordinates.second}"
                         addCurrentLocation("${coordinates.first},${coordinates.second}", weather)
                     } else {
                         Log.e("HowsTheWeather", "Failed to retrieve coordinates.")
@@ -230,6 +220,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun searchLocation(query: String) {
+        isSearching = true
         viewModelScope.launch(dispatcher) {
             try {
                 searchResponse.apply {
@@ -238,6 +229,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 }
             } catch (e: Exception) {
                 Log.e("HowsTheWeather", "Error Fetching Search Results", e)
+            }finally {
+                isSearching = false
             }
         }
     }

@@ -1,11 +1,8 @@
 package com.karan.lilcloud.composeUI
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,11 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.TextFieldDefaults
@@ -53,14 +47,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.karan.lilcloud.viewModel.WeatherViewModel
 
 
-//@Preview(showBackground = true, showSystemUi = false)
 @Composable
 fun ManageLocations(viewModel: WeatherViewModel) {
     var isExpended = remember { mutableStateOf(false) }
@@ -132,8 +123,8 @@ fun SearchBar(
         value = query.value,
         onValueChange = {
             query.value = it
-            if (query.value.length > 3) {
-                viewModel.searchLocation(query.value)                         // enable this , to use search function
+            if (query.value.length > 3 && viewModel.isSearching) {
+                viewModel.searchLocation(query.value)
             }
         },
         shape = RoundedCornerShape(32.dp),
@@ -224,6 +215,9 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
                         .height(32.dp)
                         .clip(shape = RoundedCornerShape(16.dp))
                         .background(color = Color(0x12000000))
+                        .clickable(true) {
+
+                        }
 //                        .weight(1f)
                 ) {
                     Image(
@@ -491,3 +485,4 @@ fun EnableLocationDialog(
         },
     )
 }
+
