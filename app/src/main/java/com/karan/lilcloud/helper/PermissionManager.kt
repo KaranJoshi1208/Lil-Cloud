@@ -8,7 +8,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
 
 class PermissionManager(
-    val application: Context, val request: ActivityResultLauncher<String>
+    val application: Context
 ) {
     companion object {}
 
@@ -18,8 +18,8 @@ class PermissionManager(
     fun isPermissionGranted(): Boolean {
         return (ContextCompat.checkSelfPermission(
             application, Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+        ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
             application, Manifest.permission.ACCESS_COARSE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED)
+        ) == PackageManager.PERMISSION_GRANTED)
     }
 }

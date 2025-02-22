@@ -57,6 +57,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     var permissionDenied: Boolean = false
 
+    var requestPermission = MutableStateFlow(false)
+
     var data = MutableStateFlow<List<WeatherData>>(emptyList())
     var searchResponse = mutableStateListOf<SearchResponse.SearchResponseItem?>()
 
