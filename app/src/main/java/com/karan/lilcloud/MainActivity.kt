@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
@@ -56,6 +57,12 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
+            val requestPermission = viewModel.requestPermission.collectAsState()
+
+            if(requestPermission.value) {
+                askPermission()
+            }
+
             LilCloudTheme {
                 needPermission()
                 navController = rememberNavController()
@@ -65,21 +72,18 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun needPermission() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            viewModel.pM.askLocationPermission(
-                locationPermissionLauncher,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
+        if (!viewModel.pM.isPermissionGranted()) {
+            askPermission()
         }
         else {
             viewModel.loadCurrentWeather()   // 1
         }
+    }
+
+    fun askPermission() {
+        viewModel.pM.askLocationPermission(
+            locationPermissionLauncher,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
     }
 }
