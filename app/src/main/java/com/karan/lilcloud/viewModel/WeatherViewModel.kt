@@ -96,6 +96,11 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
+
+
+
+
+
     fun loadCurrentWeather() {
 
         if (data.value.isEmpty()) {
