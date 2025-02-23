@@ -57,8 +57,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     var permissionDenied: Boolean = false
 
-    var requestPermission = MutableStateFlow(false)
-
     var data = MutableStateFlow<List<WeatherData>>(emptyList())
     var searchResponse = mutableStateListOf<SearchResponse.SearchResponseItem?>()
 
@@ -96,14 +94,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var dailyForecast = mutableStateOf<DailyForecastResponse?>(null)
     var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem?>()
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
-
-
-    fun triggerRequestingPermission() {
-        requestPermission.value = true
-//        requestPermission.value = false
-    }
-
-
 
 
     fun loadCurrentWeather() {

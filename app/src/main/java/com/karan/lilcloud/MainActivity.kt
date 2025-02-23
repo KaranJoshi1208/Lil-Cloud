@@ -57,33 +57,23 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            val requestPermission = viewModel.requestPermission.collectAsState()
-
-            if(requestPermission.value) {
-                askPermission()
-            }
-
             LilCloudTheme {
                 needPermission()
                 navController = rememberNavController()
-                NavGraph(viewModel, navController)
+                NavGraph(viewModel, navController, { needPermission() })
             }
         }
     }
 
     private fun needPermission() {
         if (!viewModel.pM.isPermissionGranted()) {
-            askPermission()
+            viewModel.pM.askLocationPermission(
+                locationPermissionLauncher,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
         }
         else {
             viewModel.loadCurrentWeather()   // 1
         }
-    }
-
-    fun askPermission() {
-        viewModel.pM.askLocationPermission(
-            locationPermissionLauncher,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
     }
 }
