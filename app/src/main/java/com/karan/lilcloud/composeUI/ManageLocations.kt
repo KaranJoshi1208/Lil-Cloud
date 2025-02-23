@@ -102,7 +102,7 @@ fun ManageLocations(viewModel: WeatherViewModel) {
         }
 
         SearchBar(viewModel, isExpended, Modifier.padding(horizontal = 12.dp))
-        TopCities(isExpended)
+        TopCities(viewModel, isExpended)
         Locations(viewModel)
 
     }
@@ -184,7 +184,7 @@ fun SearchBar(
 }
 
 @Composable
-fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) {
+fun TopCities(viewModel: WeatherViewModel, isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) {
 
     Card(
 //        shape = CardDefaults.elevatedShape,
@@ -216,7 +216,7 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
                         .clip(shape = RoundedCornerShape(16.dp))
                         .background(color = Color(0x12000000))
                         .clickable(true) {
-
+                            viewModel.triggerRequestingPermission()
                         }
 //                        .weight(1f)
                 ) {
@@ -232,7 +232,6 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
                         fontWeight = FontWeight.W200,
                         modifier = Modifier
                             .padding(end = 8.dp)
-
                     )
                 }
 
@@ -246,21 +245,20 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
                 ) {
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.globe_location_pin),
-                        contentDescription = "Locate Me",
+                        contentDescription = "Coordinates",
                         modifier = Modifier
                             .padding(start = 8.dp, end = 4.dp)
                             .size(16.dp)
+
                     )
                     Text(
                         text = "Coordinates",
                         fontWeight = FontWeight.W200,
                         modifier = Modifier
                             .padding(end = 8.dp)
-
                     )
                 }
             }
-
 
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -276,7 +274,7 @@ fun TopCities(isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) 
 
             }
 
-            if (isExpended.value) {
+            if (false) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier

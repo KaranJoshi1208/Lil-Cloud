@@ -98,7 +98,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
 
-
+    fun triggerRequestingPermission() {
+        requestPermission.value = true
+//        requestPermission.value = false
+    }
 
 
 

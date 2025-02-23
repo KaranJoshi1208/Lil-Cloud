@@ -22,4 +22,8 @@ class PermissionManager(
             application, Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED)
     }
+
+    fun getLauncher() {
+
+    }
 }
