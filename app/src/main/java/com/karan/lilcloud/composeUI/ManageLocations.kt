@@ -49,13 +49,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.karan.lilcloud.viewModel.WeatherViewModel
 
 
 @Composable
-fun ManageLocations(viewModel: WeatherViewModel) {
+fun ManageLocations(viewModel: WeatherViewModel, navController: NavController, needPermission: () -> Unit) {
     var isExpended = remember { mutableStateOf(false) }
-//    var scrollState = rememberScrollState(0)
 
     if (viewModel.showDialog.value) {
         EnableLocationDialog(
@@ -64,7 +64,6 @@ fun ManageLocations(viewModel: WeatherViewModel) {
         )
     }
 
-    // Parent column
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,7 +72,6 @@ fun ManageLocations(viewModel: WeatherViewModel) {
                     .asPaddingValues()
                     .calculateTopPadding()
             )
-//            .verticalScroll(scrollState)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -88,7 +86,9 @@ fun ManageLocations(viewModel: WeatherViewModel) {
                 modifier = Modifier
                     .padding(start = 12.dp)
                     .size(28.dp)
-
+                    .clickable(true) {
+                        navController.popBackStack()
+                    }
             )
 
             Text(
@@ -102,7 +102,7 @@ fun ManageLocations(viewModel: WeatherViewModel) {
         }
 
         SearchBar(viewModel, isExpended, Modifier.padding(horizontal = 12.dp))
-        TopCities(viewModel, isExpended)
+        TopCities(viewModel, navController, needPermission)
         Locations(viewModel)
 
     }
@@ -184,7 +184,12 @@ fun SearchBar(
 }
 
 @Composable
-fun TopCities(viewModel: WeatherViewModel, isExpended: MutableState<Boolean>, modifier: Modifier = Modifier) {
+fun TopCities(
+    viewModel: WeatherViewModel,
+    navController: NavController,
+    needPermission: () -> Unit,
+    modifier: Modifier = Modifier
+) {
 
     Card(
 //        shape = CardDefaults.elevatedShape,
@@ -216,7 +221,8 @@ fun TopCities(viewModel: WeatherViewModel, isExpended: MutableState<Boolean>, mo
                         .clip(shape = RoundedCornerShape(16.dp))
                         .background(color = Color(0x12000000))
                         .clickable(true) {
-                            viewModel.triggerRequestingPermission()
+                            needPermission()
+                            navController.popBackStack()
                         }
 //                        .weight(1f)
                 ) {
@@ -272,45 +278,6 @@ fun TopCities(viewModel: WeatherViewModel, isExpended: MutableState<Boolean>, mo
                 City("Ohio")
                 City("Tokyo")
 
-            }
-
-            if (false) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth()
-                ) {
-                    City("Haldwani")
-                    City("Delhi")
-                    City("Rishikesh")
-                    City("Haridwar")
-                    City("Dwarka")
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth()
-                ) {
-                    City("Delhi")
-                    City("Noida")
-                    City("Dwarka")
-                    City("Niger")
-                    City("Chile")
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth()
-                ) {
-                    City("Nanital")
-                    City("Noida")
-                    City("Dwarahat")
-                    City("Niger")
-                    City("Chile")
-                }
             }
         }
     }
@@ -375,7 +342,8 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                     )
                 }
 
-                val isDone = remember { mutableStateOf(false) } // need to check if this location is already added or not
+                val isDone =
+                    remember { mutableStateOf(false) } // need to check if this location is already added or not
                 Image(
                     imageVector = ImageVector.vectorResource(id = if (!isDone.value) R.drawable.add else R.drawable.check),
                     contentDescription = "Add?",

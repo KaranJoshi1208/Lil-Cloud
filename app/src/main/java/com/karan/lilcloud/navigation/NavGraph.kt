@@ -12,7 +12,8 @@ import com.karan.lilcloud.viewModel.WeatherViewModel
 @Composable
 fun NavGraph(
     viewModel: WeatherViewModel,
-    navController : NavHostController
+    navController : NavHostController,
+    needPermission : () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -27,7 +28,7 @@ fun NavGraph(
         composable(
             route = Screens.ManageLocations.name
         ) {
-            ManageLocations(viewModel)
+            ManageLocations(viewModel, navController, needPermission)
         }
     }
 }
