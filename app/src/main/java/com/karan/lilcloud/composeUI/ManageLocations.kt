@@ -1,5 +1,6 @@
 package com.karan.lilcloud.composeUI
 
+import android.text.Layout
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -10,29 +11,48 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
+import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -47,15 +67,27 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.karan.lilcloud.viewModel.WeatherViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun ManageLocations(viewModel: WeatherViewModel, navController: NavController, needPermission: () -> Unit) {
+fun ManageLocations(
+    viewModel: WeatherViewModel,
+    navController: NavController,
+    needPermission: () -> Unit
+) {
     var isExpended = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    )
 
     if (viewModel.showDialog.value) {
         EnableLocationDialog(
@@ -64,49 +96,54 @@ fun ManageLocations(viewModel: WeatherViewModel, navController: NavController, n
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                top = WindowInsets.statusBars
-                    .asPaddingValues()
-                    .calculateTopPadding()
-            )
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetContent = {
+            BottomDialog()
+        }
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
+                .fillMaxSize()
+                .padding(
+                    top = WindowInsets.statusBars
+                        .asPaddingValues()
+                        .calculateTopPadding()
+                )
         ) {
-
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.arrow_back),
-                contentDescription = "Previous Screen",
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .size(28.dp)
-                    .clickable(true) {
-                        navController.popBackStack()
-                    }
-            )
-
-            Text(
-                text = "Manage Locations",
-                fontWeight = FontWeight.W300,
-                textAlign = TextAlign.Center,
-                fontSize = 24.sp,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-            )
+                    .height(64.dp)
+            ) {
+
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.arrow_back),
+                    contentDescription = "Previous Screen",
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .size(28.dp)
+                        .clickable(true) {
+                            navController.popBackStack()
+                        }
+                )
+
+                Text(
+                    text = "Manage Locations",
+                    fontWeight = FontWeight.W300,
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
+            SearchBar(viewModel, isExpended, Modifier.padding(horizontal = 12.dp))
+            TopCities(viewModel, navController, sheetState, scope, needPermission)
+            Locations(viewModel)
         }
-
-        SearchBar(viewModel, isExpended, Modifier.padding(horizontal = 12.dp))
-        TopCities(viewModel, navController, needPermission)
-        Locations(viewModel)
-
     }
-
 }
 
 @Composable
@@ -187,8 +224,9 @@ fun SearchBar(
 fun TopCities(
     viewModel: WeatherViewModel,
     navController: NavController,
+    sheetState: ModalBottomSheetState,
+    scope: CoroutineScope,
     needPermission: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
 
     Card(
@@ -247,6 +285,11 @@ fun TopCities(
                         .height(32.dp)
                         .clip(shape = RoundedCornerShape(16.dp))
                         .background(color = Color(0x12000000))
+                        .clickable(true) {
+                            scope.launch {
+                                sheetState.show()
+                            }
+                        }
 //                        .weight(1f)
                 ) {
                     Image(
@@ -452,3 +495,84 @@ fun EnableLocationDialog(
     )
 }
 
+@Preview(showBackground = false, showSystemUi = false)
+@Composable
+private fun BottomDialog() {
+    Surface(
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .imePadding()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            var lat = remember { mutableStateOf("") }
+            var lon = remember { mutableStateOf("") }
+
+            OutlinedTextField(
+                value = lat.value,
+                onValueChange = { lat.value = it },
+                label = {
+                    Text(
+                        text = "Latitude",
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = "eg: -8.340539",
+                        color = Color(0x33000000),
+                        fontSize = 16.sp,
+                    )
+                },
+                textStyle = TextStyle(fontSize = 18.sp),
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = lon.value,
+                onValueChange = { lon.value = it },
+                label = {
+                    Text(
+                        text = "Longitude",
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = "eg: 115.091949",
+                        color = Color(0x33000000),
+                        fontSize = 16.sp,
+                    )
+                },
+                textStyle = TextStyle(fontSize = 18.sp),
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    // Handle the input values, e.g., parsing to Double or further processing.
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+            ) {
+                Text("Find")
+            }
+
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime))
+        }
+    }
+}
