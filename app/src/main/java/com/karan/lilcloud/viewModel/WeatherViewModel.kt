@@ -235,6 +235,12 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun addCoordinateLocation(lat : String, lon : String) {
+        val weather = WeatherData()
+        addCurrentLocation("${lat},${lon}", weather)
+
+    }
+
 
     // API Calls
 
