@@ -1,16 +1,13 @@
 package com.karan.lilcloud
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -43,6 +40,21 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    private val locationPermissionLauncherLocateMe =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                Toast.makeText(this@MainActivity, "Location Permission Granted 👍💦", Toast.LENGTH_SHORT).show()
+                viewModel.locateMe()
+            } else {
+                viewModel.permissionDenied = true
+                Toast.makeText(
+                    this@MainActivity,
+                    "Location Permission not Granted 💀❌",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,7 +72,7 @@ class MainActivity : ComponentActivity() {
             LilCloudTheme {
                 needPermission()
                 navController = rememberNavController()
-                NavGraph(viewModel, navController, { needPermission() })
+                NavGraph(viewModel, navController) { needPermissionLocateMe() }
             }
         }
     }
@@ -74,6 +86,18 @@ class MainActivity : ComponentActivity() {
         }
         else {
             viewModel.loadCurrentWeather()   // 1
+        }
+    }
+
+    private fun needPermissionLocateMe() {
+        if (!viewModel.pM.isPermissionGranted()) {
+            viewModel.pM.askLocationPermission(
+                locationPermissionLauncherLocateMe,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        }
+        else {
+            viewModel.locateMe()
         }
     }
 }

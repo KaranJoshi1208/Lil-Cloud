@@ -1,14 +1,9 @@
 package com.karan.lilcloud.composeUI
 
 import android.util.Log
-import com.karan.lilcloud.R
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -17,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -24,40 +20,31 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.karan.lilcloud.model.room.WeatherData
 import com.karan.lilcloud.navigation.Screens
 import com.karan.lilcloud.viewModel.WeatherViewModel
@@ -74,8 +61,7 @@ fun WeatherScreen(
     val scrollState = rememberScrollState(0)
     val pageCount = remember(data.size) { PagerState { data.size } }
     val pagerState =
-        rememberPagerState {                                  // watch out, potential bug 🚩
-//        Log.d("HowsTheWeather", "PagerState value : ${data.size}")
+        rememberPagerState {
             pageCount.pageCount
         }
 
@@ -120,6 +106,7 @@ fun WeatherScreen(
             )
             .nestedScroll(nestedScrollObj)
             .verticalScroll(scrollState)
+            .navigationBarsPadding()
             .then(modifier),
     ) {
 
@@ -141,7 +128,6 @@ fun WeatherScreen(
 fun WeatherInfo(
     viewModel: WeatherViewModel,
     weather: WeatherData,
-//    modifier: Modifier = Modifier
 ) {
 
     val cc = weather.currentCondition
@@ -151,10 +137,9 @@ fun WeatherInfo(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(top = 36.dp),
+            .padding(top = 64.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
 
         Text(
             text = gl?.localizedName?.toString() ?: "where ?",
@@ -208,19 +193,18 @@ fun WeatherInfo(
         WeatherDetails(
             viewModel,
             weather,
-            Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp)
+            Modifier.padding(top = 72.dp, start = 12.dp, end = 12.dp)
         )
-//        Wind(viewModel, Modifier.padding(horizontal = 16.dp, vertical = 20.dp))
         TemperatureGraph(
             viewModel,
             weather,
-            modifier = Modifier.padding(bottom = 16.dp, top = 16.dp, end = 8.dp)
+            modifier = Modifier.padding(top = 12.dp, end = 8.dp)
         )
-        QuinForecast(viewModel, weather, Modifier.padding(16.dp))
+        QuinForecast(viewModel, weather, Modifier.padding(12.dp))
         Twilight(
             viewModel,
             weather,
-            Modifier.padding(top = 16.dp, bottom = 40.dp, start = 16.dp, end = 16.dp)
+            Modifier.padding(bottom = 32.dp, start = 12.dp, end = 12.dp)
         )
     }
 }
@@ -283,7 +267,7 @@ fun WeatherDetails(
                             text = temp?.maximum?.metric?.value.toString(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Red
+                            color = Color.Red.copy(alpha = 0.5f)
                         )
                         Text(
                             text = " / ",
@@ -295,7 +279,7 @@ fun WeatherDetails(
                             text = temp?.minimum?.metric?.value.toString(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Blue
+                            color = Color.Blue.copy(alpha = 0.7f)
                         )
                     }
                 }
@@ -373,35 +357,6 @@ fun WeatherDetails(
     }
 }
 
-
-@Composable
-fun Loading() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x40000000))
-                .blur(radius = 20.dp)
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 104.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            androidx.compose.material3.CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 4.dp,
-                modifier = Modifier
-                    .size(100.dp)
-            )
-        }
-    }
-}
-
 @Composable
 fun InfoElement(name: String = "", value: String = "") {
     Row(
@@ -413,7 +368,7 @@ fun InfoElement(name: String = "", value: String = "") {
         Text(
             text = name,
             fontSize = 12.sp,
-            color = Color(0x50FFFFFF),
+            color = Color(0x69FFFFFF),
         )
         Text(
             text = value,

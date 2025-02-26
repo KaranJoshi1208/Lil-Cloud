@@ -6,8 +6,6 @@ import com.karan.lilcloud.model.accuWeather.CurrentConditionResponse.CurrentCond
 
 class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
     data class CurrentConditionResponseItem(
-//        @SerializedName("ApparentTemperature")
-//        val apparentTemperature: ApparentTemperature?,
         @SerializedName("Ceiling")
         val ceiling: Ceiling?,
         @SerializedName("CloudCover")
@@ -18,34 +16,20 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
         val epochTime: Int?,
         @SerializedName("HasPrecipitation")
         val hasPrecipitation: Boolean?,
-//        @SerializedName("IndoorRelativeHumidity")
-//        val indoorRelativeHumidity: Int?,
         @SerializedName("IsDayTime")
         val isDayTime: Boolean?,
         @SerializedName("Link")
         val link: String?,
-//        @SerializedName("LocalObservationDateTime")
-//        val localObservationDateTime: String?,
         @SerializedName("MobileLink")
         val mobileLink: String?,
-//        @SerializedName("ObstructionsToVisibility")
-//        val obstructionsToVisibility: String?,
-//        @SerializedName("Past24HourTemperatureDeparture")
-//        val past24HourTemperatureDeparture: Past24HourTemperatureDeparture?,
         @SerializedName("Precip1hr")
         val precip1hr: Precip1hr?,
-//        @SerializedName("PrecipitationSummary")
-//        val precipitationSummary: PrecipitationSummary?,
         @SerializedName("PrecipitationType")
         val precipitationType: Any?,
         @SerializedName("Pressure")
         val pressure: Pressure?,
-//        @SerializedName("PressureTendency")
-//        val pressureTendency: PressureTendency?,
         @SerializedName("RealFeelTemperature")
         val realFeelTemperature: RealFeelTemperature?,
-//        @SerializedName("RealFeelTemperatureShade")
-//        val realFeelTemperatureShade: RealFeelTemperatureShade?,
         @SerializedName("RelativeHumidity")
         val relativeHumidity: Int?,
         @SerializedName("Temperature")
@@ -62,42 +46,11 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
         val weatherIcon: Int?,
         @SerializedName("WeatherText")
         val weatherText: String?,
-//        @SerializedName("WetBulbGlobeTemperature")
-//        val wetBulbGlobeTemperature: WetBulbGlobeTemperature?,
-//        @SerializedName("WetBulbTemperature")
-//        val wetBulbTemperature: WetBulbTemperature?,
         @SerializedName("Wind")
         val wind: Wind?,
-//        @SerializedName("WindChillTemperature")
-//        val windChillTemperature: WindChillTemperature?,
         @SerializedName("WindGust")
         val windGust: WindGust?
     ) {
-        data class ApparentTemperature(
-            @SerializedName("Imperial")
-            val imperial: Imperial?,
-            @SerializedName("Metric")
-            val metric: Metric?
-        ) {
-            data class Imperial(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-
-            data class Metric(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-        }
-
         data class Ceiling(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -148,31 +101,6 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
             )
         }
 
-        data class Past24HourTemperatureDeparture(
-            @SerializedName("Imperial")
-            val imperial: Imperial?,
-            @SerializedName("Metric")
-            val metric: Metric?
-        ) {
-            data class Imperial(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-
-            data class Metric(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-        }
-
         data class Precip1hr(
             @SerializedName("Imperial")
             val imperial: Imperial?,
@@ -196,225 +124,6 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                 @SerializedName("Value")
                 val value: Double?
             )
-        }
-
-        data class PrecipitationSummary(
-            @SerializedName("Past12Hours")
-            val past12Hours: Past12Hours?,
-            @SerializedName("Past18Hours")
-            val past18Hours: Past18Hours?,
-            @SerializedName("Past24Hours")
-            val past24Hours: Past24Hours?,
-            @SerializedName("Past3Hours")
-            val past3Hours: Past3Hours?,
-            @SerializedName("Past6Hours")
-            val past6Hours: Past6Hours?,
-            @SerializedName("Past9Hours")
-            val past9Hours: Past9Hours?,
-            @SerializedName("PastHour")
-            val pastHour: PastHour?,
-            @SerializedName("Precipitation")
-            val precipitation: Precipitation?
-        ) {
-            data class Past12Hours(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
-
-            data class Past18Hours(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
-
-            data class Past24Hours(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
-
-            data class Past3Hours(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
-
-            data class Past6Hours(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
-
-            data class Past9Hours(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
-
-            data class PastHour(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
-
-            data class Precipitation(
-                @SerializedName("Imperial")
-                val imperial: Imperial?,
-                @SerializedName("Metric")
-                val metric: Metric?
-            ) {
-                data class Imperial(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-
-                data class Metric(
-                    @SerializedName("Unit")
-                    val unit: String?,
-                    @SerializedName("UnitType")
-                    val unitType: Int?,
-                    @SerializedName("Value")
-                    val value: Double?
-                )
-            }
         }
 
         data class Pressure(
@@ -442,43 +151,7 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
             )
         }
 
-        data class PressureTendency(
-            @SerializedName("Code")
-            val code: String?,
-            @SerializedName("LocalizedText")
-            val localizedText: String?
-        )
-
         data class RealFeelTemperature(
-            @SerializedName("Imperial")
-            val imperial: Imperial?,
-            @SerializedName("Metric")
-            val metric: Metric?
-        ) {
-            data class Imperial(
-                @SerializedName("Phrase")
-                val phrase: String?,
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-
-            data class Metric(
-                @SerializedName("Phrase")
-                val phrase: String?,
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-        }
-
-        data class RealFeelTemperatureShade(
             @SerializedName("Imperial")
             val imperial: Imperial?,
             @SerializedName("Metric")
@@ -737,56 +410,6 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
             )
         }
 
-        data class WetBulbGlobeTemperature(
-            @SerializedName("Imperial")
-            val imperial: Imperial?,
-            @SerializedName("Metric")
-            val metric: Metric?
-        ) {
-            data class Imperial(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-
-            data class Metric(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-        }
-
-        data class WetBulbTemperature(
-            @SerializedName("Imperial")
-            val imperial: Imperial?,
-            @SerializedName("Metric")
-            val metric: Metric?
-        ) {
-            data class Imperial(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-
-            data class Metric(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-        }
-
         data class Wind(
             @SerializedName("Direction")
             val direction: Direction?,
@@ -826,31 +449,6 @@ class CurrentConditionResponse : ArrayList<CurrentConditionResponseItem>(){
                     val value: Double?
                 )
             }
-        }
-
-        data class WindChillTemperature(
-            @SerializedName("Imperial")
-            val imperial: Imperial?,
-            @SerializedName("Metric")
-            val metric: Metric?
-        ) {
-            data class Imperial(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
-
-            data class Metric(
-                @SerializedName("Unit")
-                val unit: String?,
-                @SerializedName("UnitType")
-                val unitType: Int?,
-                @SerializedName("Value")
-                val value: Double?
-            )
         }
 
         data class WindGust(

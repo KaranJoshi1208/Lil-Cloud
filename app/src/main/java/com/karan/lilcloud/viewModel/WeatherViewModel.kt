@@ -8,6 +8,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -83,22 +84,13 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     // Control variables
     var showDialog = mutableStateOf<Boolean>(false)
     var showLoading = mutableStateOf<Boolean>(false)
-    var isSearching = false
     var navIt = mutableStateOf<Boolean>(false)
 
 
-    // API responses
-    var geoLocation = mutableStateOf<GeoPositionResponse?>(null)
-    var currentCondition =
-        mutableStateOf<CurrentConditionResponse.CurrentConditionResponseItem?>(null)
-    var dailyForecast = mutableStateOf<DailyForecastResponse?>(null)
-    var halfDayForecast = mutableStateListOf<HalfDayForecastResponse.HalfDayForecastResponseItem?>()
-    var quinForecastResponse = mutableStateOf<QuinForecastResponse?>(null)
 
+    fun loadCurrentWeather(override : Boolean = false) {
 
-    fun loadCurrentWeather() {
-
-        if (data.value.isEmpty()) {
+        if (data.value.isEmpty() || override) {
 
             if (!isLocationEnabled()) {
                 showDialog.value = true
@@ -198,7 +190,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
             getCoordinates { coordinates ->
                 if (coordinates != null) {
-//                        weather.locationKey = "${coordinates.first},${coordinates.second}"
                     addCurrentLocation("${coordinates.first},${coordinates.second}", weather)
                 } else {
                     Log.e("HowsTheWeather", "Failed to retrieve coordinates.(During Refresh)")
@@ -211,16 +202,22 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
 
-    fun addLocation(key: String?): Boolean {
+    fun addLocation(key: String?) {
+        for(weather in data.value) {
+            if(weather.isCurrentLocation) {
+                Toast.makeText(applicationContext, "Already Located ${weather.geoLocation?.administrativeArea?.localizedName.toString()}", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
         // this function believes that this is not a duplicate call for same location
         key?.let {
             load(WeatherData(locationKey = key))
-        } ?: return false
-        return true
+        } ?: return
+        return
     }
 
     fun searchLocation(query: String) {
-        isSearching = true
         viewModelScope.launch(dispatcher) {
             try {
                 searchResponse.apply {
@@ -229,10 +226,19 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 }
             } catch (e: Exception) {
                 Log.e("HowsTheWeather", "Error Fetching Search Results", e)
-            }finally {
-                isSearching = false
             }
         }
+    }
+
+    fun locateMe() {
+
+        for(weather in data.value) {
+            if(weather.isCurrentLocation) {
+                Toast.makeText(applicationContext, "Already Located ${weather.geoLocation?.administrativeArea?.localizedName.toString()}", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+        loadCurrentWeather(true)
     }
 
     fun addCoordinateLocation(lat : String, lon : String) {
@@ -240,7 +246,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         addCurrentLocation("${lat},${lon}", weather)
 
     }
-
 
     // API Calls
 

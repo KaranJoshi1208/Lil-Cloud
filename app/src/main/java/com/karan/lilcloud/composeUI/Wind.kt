@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +40,7 @@ fun Wind(viewmodel : WeatherViewModel, modifier: Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        val wind = viewmodel.currentCondition.value?.wind
+        val wind = viewmodel.data.collectAsState().value[0].currentCondition?.wind
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,7 +80,7 @@ fun Wind(viewmodel : WeatherViewModel, modifier: Modifier) {
 
                     InfoElement(
                         name = "Gust Speed",
-                        value =  viewmodel.currentCondition.value?.windGust?.speed?.metric?.value.toString() + " Km/h"
+//                        value =  viewmodel.currentCondition.value?.windGust?.speed?.metric?.value.toString() + " Km/h"
                     )
                 }
 
