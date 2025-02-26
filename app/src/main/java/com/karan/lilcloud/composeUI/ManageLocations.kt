@@ -1,6 +1,5 @@
 package com.karan.lilcloud.composeUI
 
-import android.text.Layout
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -99,7 +98,7 @@ fun ManageLocations(
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            BottomDialog(viewModel)
+            BottomDialog(viewModel, scope, sheetState)
         }
     ) {
         Column(
@@ -497,7 +496,11 @@ fun EnableLocationDialog(
 }
 
 @Composable
-private fun BottomDialog(viewModel: WeatherViewModel) {
+private fun BottomDialog(
+    viewModel: WeatherViewModel,
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState
+    ) {
     var lat = remember { mutableStateOf("") }
     var lon = remember { mutableStateOf("") }
     Surface(
@@ -568,6 +571,9 @@ private fun BottomDialog(viewModel: WeatherViewModel) {
             Button(
                 onClick = {
                     viewModel.addCoordinateLocation(lat.value, lon.value)
+                    scope.launch {
+                        sheetState.hide()
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
