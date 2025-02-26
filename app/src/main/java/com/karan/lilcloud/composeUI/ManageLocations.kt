@@ -99,7 +99,7 @@ fun ManageLocations(
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            BottomDialog()
+            BottomDialog(viewModel)
         }
     ) {
         Column(
@@ -145,6 +145,7 @@ fun ManageLocations(
         }
     }
 }
+
 
 @Composable
 fun SearchBar(
@@ -495,11 +496,11 @@ fun EnableLocationDialog(
     )
 }
 
-@Preview(showBackground = false, showSystemUi = false)
 @Composable
-private fun BottomDialog() {
+private fun BottomDialog(viewModel: WeatherViewModel) {
+    var lat = remember { mutableStateOf("") }
+    var lon = remember { mutableStateOf("") }
     Surface(
-        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
@@ -511,8 +512,7 @@ private fun BottomDialog() {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            var lat = remember { mutableStateOf("") }
-            var lon = remember { mutableStateOf("") }
+
 
             OutlinedTextField(
                 value = lat.value,
@@ -533,6 +533,8 @@ private fun BottomDialog() {
                     )
                 },
                 textStyle = TextStyle(fontSize = 18.sp),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -557,13 +559,15 @@ private fun BottomDialog() {
                     )
                 },
                 textStyle = TextStyle(fontSize = 18.sp),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier
                     .fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    // Handle the input values, e.g., parsing to Double or further processing.
+                    viewModel.addCoordinateLocation(lat.value, lon.value)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
