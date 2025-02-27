@@ -296,25 +296,36 @@ fun TopCities(
                     .padding(vertical = 12.dp)
                     .fillMaxWidth()
             ) {
-                City("Almora")
-                City("Dwarahat")
-                City("Nanital")
-                City("Ohio")
-                City("Tokyo")
-
+                City("Almora") {
+                    viewModel.addLocation("191359")
+                }
+                City("Dwarahat") {
+                    viewModel.addLocation("196541")
+                }
+                City("Nainital ") {
+                    viewModel.addLocation("191346")
+                }
+                City("Ohio") {
+                    viewModel.addLocation("3388995")
+                }
+                City("Tokyo") {
+                    viewModel.addLocation("226396")
+                }
             }
         }
     }
 }
 
 @Composable
-fun City(city: String, modifier: Modifier = Modifier) {
+fun City(city: String, onClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
             .background(color = Color(0x12000000))
-            .then(modifier)
+            .clickable(true) {
+                onClick()
+            }
     ) {
         Text(
             text = city,
@@ -328,7 +339,7 @@ fun City(city: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
+fun SearchItems(viewModel: WeatherViewModel) {
 
     val result = viewModel.searchResponse
 
@@ -339,8 +350,12 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        items(result.size) { index ->
+        items(result.size/2) { index ->
             val temp = result[index]
+            val isDone = remember {
+                mutableStateOf(viewModel.isAdded(temp?.key.toString()))
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -366,8 +381,6 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                     )
                 }
 
-                val isDone =
-                    remember { mutableStateOf(false) } // need to check if this location is already added or not
                 Image(
                     imageVector = ImageVector.vectorResource(id = if (!isDone.value) R.drawable.add else R.drawable.check),
                     contentDescription = "Add?",
@@ -377,11 +390,11 @@ fun SearchItems(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
                         .clickable(true) {
                             viewModel.addLocation(temp?.key)
                         }
+
                 )
             }
         }
     }
-
 }
 
 @Composable
@@ -480,7 +493,7 @@ private fun BottomDialog(
     viewModel: WeatherViewModel,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
-    ) {
+) {
     var lat = remember { mutableStateOf("") }
     var lon = remember { mutableStateOf("") }
     Surface(

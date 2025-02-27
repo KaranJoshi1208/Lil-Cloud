@@ -71,21 +71,19 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         }
 
         // reducing API calls , since I am using a free API
-        searchResponse.addAll(
-            gson.fromJson(
-                application.resources.openRawResource(R.raw.search).bufferedReader()
-                    .use { it.readText() },
-                Array<SearchResponse.SearchResponseItem?>::class.java
-            )
-        )
-
+//        searchResponse.addAll(
+//            gson.fromJson(
+//                application.resources.openRawResource(R.raw.search).bufferedReader()
+//                    .use { it.readText() },
+//                Array<SearchResponse.SearchResponseItem?>::class.java
+//            )
+//        )
     }
 
     // Control variables
     var showDialog = mutableStateOf<Boolean>(false)
     var showLoading = mutableStateOf<Boolean>(false)
     var navIt = mutableStateOf<Boolean>(false)
-
 
 
     fun loadCurrentWeather(override : Boolean = false) {
@@ -203,18 +201,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
 
     fun addLocation(key: String?) {
+        if(key == null) return
         for(weather in data.value) {
-            if(weather.isCurrentLocation) {
+            if(weather.locationKey == key) {
                 Toast.makeText(applicationContext, "Already Located ${weather.geoLocation?.administrativeArea?.localizedName.toString()}", Toast.LENGTH_SHORT).show()
                 return
             }
         }
-
-        // this function believes that this is not a duplicate call for same location
-        key?.let {
-            load(WeatherData(locationKey = key))
-        } ?: return
-        return
+        // makes API call only for new keys
+        load(WeatherData(locationKey = key))
     }
 
     fun searchLocation(query: String) {
@@ -420,6 +415,16 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             1L -> "Tomorrow"
             else -> day.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
         }
+    }
+
+    fun isAdded(key: String): Boolean {
+        for(weather in data.value) {
+            if(weather.locationKey == key) {
+//                Toast.makeText(applicationContext, "Already Located ${weather.geoLocation?.administrativeArea?.localizedName.toString()}", Toast.LENGTH_SHORT).show()
+                return true
+            }
+        }
+        return false
     }
 
 
